@@ -1374,46 +1374,91 @@ function generate(){
   runGenerate();
 }
 
-var msgs=['Analysing body shape…','Detecting pose & proportions…','Mapping fabric texture…','Aligning garment to body…','Rendering lighting & shadows…','Finalising your look…'];
+var msgs=['Uploading photo…','Analysing body…','Contacting AI…','Rendering look…','Almost ready…'];
 function runGenerate(){
-  captchaPassed = false;
-  if(!isLoggedIn()) addTry();
-  updateTriesBadge();
+  var useCredits = window._useCredits || false;
+  var formData   = new FormData();
+  var photoInput  = document.getElementById('file-in');
+  var productUrl  = document.getElementById('prod-url');
+  var productType = document.querySelector('select.fit-in');
+  var nums        = document.querySelectorAll('input[type="number"]');
 
-  var ov=document.getElementById('gen-ov');
-  var es=document.getElementById('empty-st');
-  var rs=document.getElementById('result-st');
-  var rb=document.getElementById('res-bar');
-  var as=document.getElementById('ai-sug');
-  var st=document.getElementById('gen-status');
-  var pf=document.getElementById('prog-fill');
+  if (!photoInput || !photoInput.files[0]) { showToast('Upload your photo first', '#f87171'); return; }
+  if (!productUrl || !productUrl.value.trim()) { showToast('Enter a product URL', '#f87171'); return; }
 
-  es.style.display='none';
-  rs.style.display='none';
+  formData.append('person_image', photoInput.files[0]);
+  formData.append('product_url',  productUrl.value.trim());
+  formData.append('product_type', productType ? productType.value : 'clothing');
+  formData.append('use_credits',  useCredits ? 'true' : 'false');
+  if (nums[0] && nums[0].value) formData.append('height_cm', nums[0].value);
+  if (nums[1] && nums[1].value) formData.append('weight_kg', nums[1].value);
+  if (nums[2] && nums[2].value) formData.append('age',       nums[2].value);
+
+  var ov = document.getElementById('gen-ov');
+  var es = document.getElementById('empty-st');
+  var rs = document.getElementById('result-st');
+  var rb = document.getElementById('res-bar');
+  var as = document.getElementById('ai-sug');
+  var st = document.getElementById('gen-status');
+  var pf = document.getElementById('prog-fill');
+
+  es.style.display = 'none'; rs.style.display = 'none';
   rb.classList.remove('on'); as.classList.remove('on');
-  ov.classList.add('on');
-  pf.style.transition='none'; pf.style.width='0%';
+  ov.classList.add('on'); pf.style.transition = 'none'; pf.style.width = '0%';
 
-  var i=0;
-  var id=setInterval(function(){
-    if(i<msgs.length){
-      st.textContent=msgs[i];
-      pf.style.transition='width .44s ease';
-      pf.style.width=Math.round(((i+1)/msgs.length)*100)+'%';
-      i++;
-    } else {
-      clearInterval(id);
-      setTimeout(function(){
-        ov.classList.remove('on');
-        rs.style.display='flex';
-        rb.classList.add('on');
-        as.classList.add('on');
-        if(!isLoggedIn() && getTries()>=MAX_FREE){
-          setTimeout(function(){ showToast('🔒 All free tries used. Login for unlimited access!','#fb923c'); },800);
-        }
-      },380);
+  var msgs_local = ['Uploading photo…','Analysing body…','Contacting AI…','Rendering look…','Almost ready…'];
+  var mi = 0;
+  var msgTimer = setInterval(function() {
+    if (mi < msgs_local.length) {
+      st.textContent = msgs_local[mi];
+      pf.style.transition = 'width 0.5s ease';
+      pf.style.width = Math.round(((mi+1)/msgs_local.length)*100) + '%';
+      mi++;
     }
-  },520);
+  }, 3000);
+
+  apiGenerateTryOn(formData)
+    .then(function(data) {
+      var id = data.id; var attempts = 0;
+      st.textContent = 'AI is rendering your look…';
+      var poller = setInterval(function() {
+        attempts++;
+        apiPollResult(id).then(function(result) {
+          if (result.status === 'completed') {
+            clearInterval(poller); clearInterval(msgTimer);
+            ov.classList.remove('on'); rs.style.display = 'flex';
+            rb.classList.add('on'); as.classList.add('on');
+            if (result.result_front_url && !result.result_front_url.includes('placehold')) {
+              var el = document.getElementById('res-emoji');
+              if (el) el.innerHTML = '<img src="'+result.result_front_url+'" style="max-height:280px;border-radius:10px;object-fit:contain"/>';
+            }
+            var vl = document.getElementById('res-view');
+            if (vl) {
+              var eng = result.engine === 'replicate' ? 'Replicate IDM-VTON ⚡' : 'HuggingFace CatVTON 🤗';
+              vl.textContent = 'Front View · ' + eng + ' · Fit ' + (result.fit_score||'98') + '%';
+            }
+            if (useCredits) { userCredits = Math.max(0, userCredits-1); updateCreditUI(); }
+            window._useCredits = false;
+          } else if (result.status === 'failed') {
+            clearInterval(poller); clearInterval(msgTimer);
+            ov.classList.remove('on'); es.style.display = 'flex';
+            showToast('AI rendering failed — try again', '#f87171');
+          } else if (attempts > 40) {
+            clearInterval(poller); clearInterval(msgTimer);
+            ov.classList.remove('on'); es.style.display = 'flex';
+            showToast('Timed out — HuggingFace queue is busy, try again in a minute', '#f97316');
+          }
+        });
+      }, 3000);
+    })
+    .catch(function(err) {
+      clearInterval(msgTimer);
+      ov.classList.remove('on'); es.style.display = 'flex';
+      if      (err.message === 'rate_limit')           showLimitModal();
+      else if (err.message === 'insufficient_credits') openTopUp();
+      else showToast('Error: ' + err.message, '#f87171');
+      window._useCredits = false;
+    });
 }
 
 /* ════════════════════════════════════════════
@@ -2598,6 +2643,29 @@ function startPayment(){
 
 /* Helper */
 function getToken(){ return localStorage.getItem('fitcheck_token') || ''; }
+
+/* ── API connection ── */
+var API_BASE = 'http://localhost:8000/api/v1';
+// After deploying, change to your Railway URL:
+// var API_BASE = 'https://your-app.up.railway.app/api/v1';
+
+async function apiGenerateTryOn(formData) {
+  var token = localStorage.getItem('fitcheck_token') || '';
+  var headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+  var r = await fetch(API_BASE + '/tryon/', { method: 'POST', headers: headers, body: formData });
+  var d = await r.json();
+  if (r.ok) return d;
+  if (r.status === 429) throw new Error('rate_limit');
+  if (r.status === 402) throw new Error('insufficient_credits');
+  throw new Error(d.detail || 'Try-on failed');
+}
+
+async function apiPollResult(id) {
+  var token = localStorage.getItem('fitcheck_token') || '';
+  var headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+  var r = await fetch(API_BASE + '/tryon/' + id, { headers: headers });
+  return await r.json();
+}
 
 /* ── Patch generate() to support credit path ──────── */
 var _origGenerate = generate;

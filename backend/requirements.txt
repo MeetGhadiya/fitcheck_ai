@@ -7,9 +7,9 @@ uvicorn[standard]==0.30.1
 python-multipart==0.0.9
 
 # Database
-sqlalchemy[asyncio]==2.0.30
-asyncpg==0.29.0
-alembic==1.13.1
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.13.2
 
 # Cache / Rate limiting
 redis[hiredis]==5.0.4
@@ -17,8 +17,8 @@ redis[hiredis]==5.0.4
 # Auth
 passlib[bcrypt]==1.7.4
 python-jose[cryptography]==3.3.0
-pydantic[email]==2.7.1
-pydantic-settings==2.3.0
+pydantic[email]==2.8.2
+pydantic-settings==2.4.0
 google-auth==2.30.0
 
 # AI — Replicate (paid path)
@@ -28,7 +28,7 @@ replicate==0.30.0
 httpx==0.27.0
 
 # Image processing
-Pillow==10.3.0
+Pillow==11.0.0
 
 # Storage (S3 / Cloudflare R2)
 boto3==1.34.110

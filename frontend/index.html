@@ -1166,13 +1166,54 @@ function i(id,w,h,stroke){
 
           <!-- Result bar -->
           <div class="res-bar" id="res-bar">
-            <div class="res-meta">
-              <span style="color:#22c55e;display:flex;align-items:center;gap:3px;font-size:12px"><svg width="11" height="11"><use href="#ic-check" stroke="#22c55e"/></svg>Fit Score: 98% · Size M</span>
-              <span style="color:var(--brand);display:flex;align-items:center;gap:3px;font-size:12px"><svg width="11" height="11"><use href="#ic-ruler" stroke="#0ea5e9"/></svg>True to fit · Premium Dark Blazer</span>
-            </div>
-            <div class="row gap2">
-              <button class="btn btn-ghost sm" style="gap:5px"><svg width="13" height="13"><use href="#ic-dl"/></svg>Download</button>
-              <button class="btn btn-orange sm" onclick="openLogin()" style="gap:5px"><svg width="13" height="13"><use href="#ic-lock" stroke="white"/></svg>Save Look</button>
+            <div style="width:100%;display:flex;flex-direction:column;gap:14px;padding:15px;background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.15);border-radius:10px">
+              <!-- Header with scores -->
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+                <div>
+                  <span style="color:#22c55e;display:flex;align-items:center;gap:3px;font-size:13px;font-weight:700"><svg width="11" height="11"><use href="#ic-check" stroke="#22c55e"/></svg>Perfect Fit Match - 98% Score</span>
+                  <span style="color:var(--brand);display:flex;align-items:center;gap:3px;font-size:12px;margin-top:4px"><svg width="11" height="11"><use href="#ic-ruler" stroke="#0ea5e9"/></svg>Recommended Size: M · True to Fit</span>
+                </div>
+                <div class="row gap2">
+                  <button class="btn btn-ghost sm" style="gap:5px"><svg width="13" height="13"><use href="#ic-dl"/></svg>Download</button>
+                  <button class="btn btn-orange sm" onclick="openLogin()" style="gap:5px"><svg width="13" height="13"><use href="#ic-lock" stroke="white"/></svg>Save Look</button>
+                </div>
+              </div>
+              
+              <!-- Person & Product Info -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:1px solid rgba(14,165,233,0.1);padding-top:12px">
+                <div>
+                  <p style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">Your Profile</p>
+                  <div style="font-size:12px;color:var(--text);line-height:1.6">
+                    <div id="person-info" style="font-size:11px;color:var(--muted)">Height: 175cm · Weight: 70kg · Regular Build</div>
+                  </div>
+                </div>
+                <div>
+                  <p style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">Product Details</p>
+                  <div style="font-size:12px;color:var(--text);line-height:1.6">
+                    <div id="product-info" style="font-size:11px;color:var(--muted)">Premium Dark Blazer · Clothing</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- AI Analysis -->
+              <div style="border-top:1px solid rgba(14,165,233,0.1);padding-top:12px">
+                <p style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">AI Analysis</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:11px">
+                  <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);padding:8px;border-radius:6px">
+                    <div style="color:#22c55e;font-weight:700">Perfect Fit</div>
+                    <div style="color:var(--muted);font-size:10px;margin-top:2px">Chest & shoulders match</div>
+                  </div>
+                  <div style="background:rgba(252,163,17,0.1);border:1px solid rgba(252,163,17,0.2);padding:8px;border-radius:6px">
+                    <div style="color:#fca311;font-weight:700">True to Fit</div>
+                    <div style="color:var(--muted);font-size:10px;margin-top:2px">No alterations needed</div>
+                  </div>
+                  <div style="background:rgba(14,165,233,0.1);border:1px solid rgba(14,165,233,0.2);padding:8px;border-radius:6px">
+                    <div style="color:#0ea5e9;font-weight:700">4 View Angles</div>
+                    <div style="color:var(--muted);font-size:10px;margin-top:2px">Front, side, 3/4, back</div>
+                  </div>
+                </div>
+                <div id="ai-notes" style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.5">This blazer flatters your build perfectly. The shoulder width is ideal, and the length is proportionate to your height.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1437,6 +1478,28 @@ function runGenerate(){
               var eng = result.engine === 'replicate' ? 'Replicate IDM-VTON ⚡' : 'HuggingFace CatVTON 🤗';
               vl.textContent = 'Front View · ' + eng + ' · Fit ' + (result.fit_score||'98') + '%';
             }
+            
+            // Update result info with person and product details
+            var personInfo = document.getElementById('person-info');
+            if (personInfo) {
+              var p_height = formData.get('height_cm') || '175';
+              var p_weight = formData.get('weight_kg') || '70';
+              var p_body = formData.get('body_type') || 'Regular';
+              personInfo.textContent = 'Height: ' + p_height + 'cm · Weight: ' + p_weight + 'kg · ' + p_body;
+            }
+            
+            var productInfo = document.getElementById('product-info');
+            if (productInfo) {
+              var p_name = result.product_name || window._lastProductName || 'Product Item';
+              var p_type = formData.get('product_type') || 'Clothing';
+              productInfo.textContent = p_name + ' · ' + p_type;
+            }
+            
+            var aiNotes = document.getElementById('ai-notes');
+            if (aiNotes && result.ai_notes) {
+              aiNotes.textContent = result.ai_notes;
+            }
+            
             if (useCredits) { userCredits = Math.max(0, userCredits-1); updateCreditUI(); }
             window._useCredits = false;
           } else if (result.status === 'failed') {
@@ -2383,7 +2446,7 @@ body.light .tab-bar { background:#e8eef8; }
 </div>
 
 <!-- ═══════════════════ UPDATED NAV with all links ═══════════════════ -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ── Theme toggle ── */
 function toggleTheme(){
   document.body.classList.toggle('light');

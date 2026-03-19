@@ -14,15 +14,31 @@ logger = logging.getLogger("fitcheck.ratelimit")
 
 # ── Redis client ──────────────────────────────────────
 _redis: aioredis.Redis = None
+_redis_error = False  # Track if Redis is unavailable
 
 async def get_redis() -> aioredis.Redis:
-    global _redis
+    global _redis, _redis_error
+    
+    # If we already know Redis is unavailable, return None
+    if _redis_error:
+        return None
+    
     if _redis is None:
-        _redis = await aioredis.from_url(
-            settings.REDIS_URL,
-            encoding="utf-8",
-            decode_responses=True,
-        )
+        try:
+            _redis = await aioredis.from_url(
+                settings.REDIS_URL,
+                encoding="utf-8",
+                decode_responses=True,
+                socket_connect_timeout=2,
+                socket_timeout=2,
+            )
+            # Test connection
+            await _redis.ping()
+        except Exception as e:
+            logger.warning(f"Redis unavailable ({e}) — rate limiting disabled")
+            _redis_error = True
+            return None
+    
     return _redis
 
 
@@ -39,6 +55,10 @@ async def check_tryon_limit(user_id: str, plan: UserPlan, request: Request):
         return  # no limit
 
     redis = await get_redis()
+    if redis is None:
+        logger.info(f"Redis unavailable — skipping rate limit check for user {user_id}")
+        return  # Allow request if Redis is down
+    
     today = datetime.utcnow().strftime("%Y-%m-%d")
     key = f"tryon_limit:{user_id}:{today}"
 
@@ -62,6 +82,9 @@ async def check_tryon_limit(user_id: str, plan: UserPlan, request: Request):
 
 async def increment_tryon_count(user_id: str):
     redis = await get_redis()
+    if redis is None:
+        return  # Skip if Redis unavailable
+    
     today = datetime.utcnow().strftime("%Y-%m-%d")
     key = f"tryon_limit:{user_id}:{today}"
     pipe = redis.pipeline()
@@ -81,6 +104,16 @@ async def get_tryon_usage(user_id: str) -> dict:
     redis = await get_redis()
     today = datetime.utcnow().strftime("%Y-%m-%d")
     key = f"tryon_limit:{user_id}:{today}"
+    
+    if redis is None:
+        # Return default if Redis unavailable
+        return {
+            "used": 0,
+            "limit": settings.FREE_DAILY_TRYON_LIMIT,
+            "date": today,
+            "redis_unavailable": True,
+        }
+    
     count = await redis.get(key)
     return {
         "used": int(count) if count else 0,
@@ -93,6 +126,9 @@ async def get_tryon_usage(user_id: str) -> dict:
 async def check_api_rate_limit(api_key: str):
     """60 requests/minute per API key."""
     redis = await get_redis()
+    if redis is None:
+        return  # Skip rate limiting if Redis unavailable
+    
     now = datetime.utcnow()
     window = now.strftime("%Y-%m-%dT%H:%M")
     key = f"api_rate:{api_key}:{window}"
@@ -115,6 +151,9 @@ async def check_api_rate_limit(api_key: str):
 async def check_guest_ip_limit(request: Request):
     """3 try-ons per day per IP for unauthenticated users."""
     redis = await get_redis()
+    if redis is None:
+        return  # Skip rate limiting if Redis unavailable
+    
     ip = request.client.host
     today = datetime.utcnow().strftime("%Y-%m-%d")
     key = f"guest_limit:{ip}:{today}"

@@ -33,6 +33,9 @@ class TryOnResponse(BaseModel):
     status:           str
     engine:           Optional[str]   # "huggingface" | "replicate" | "mock"
     result_front_url: Optional[str]
+    product_name:     Optional[str]   # Product name for display
+    product_type:     Optional[str]   # Product category
+    person_details:   Optional[dict]  # {height_cm, weight_kg, body_type, age}
     fit_score:        Optional[float]
     recommended_size: Optional[str]
     ai_notes:         Optional[str]
@@ -134,6 +137,14 @@ async def create_tryon(
     return TryOnResponse(
         id=tryon_id, status="processing",
         engine="replicate" if using_credits else "huggingface",
+        product_name=product_name,
+        product_type=product_type,
+        person_details={
+            "height_cm": height_cm or (current_user.height_cm if current_user else None),
+            "weight_kg": weight_kg or (current_user.weight_kg if current_user else None),
+            "body_type": body_type or (current_user.body_type if current_user else None),
+            "age": age or (current_user.age if current_user else None),
+        },
         result_front_url=None, fit_score=None,
         recommended_size=None, ai_notes=None, render_time_ms=None,
         credits_used=1 if using_credits else 0,
@@ -156,6 +167,14 @@ async def get_tryon(
     return TryOnResponse(
         id=tryon.id, status=tryon.status,
         engine=tryon.ai_engine,
+        product_name=tryon.product_name,
+        product_type=tryon.product_type,
+        person_details={
+            "height_cm": tryon.height_cm,
+            "weight_kg": tryon.weight_kg,
+            "body_type": tryon.body_type,
+            "age": tryon.age,
+        },
         result_front_url=tryon.result_front_url,
         fit_score=tryon.fit_score,
         recommended_size=tryon.recommended_size,

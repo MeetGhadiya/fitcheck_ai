@@ -27,15 +27,31 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS Configuration — Allow all origins in DEBUG mode, restrict in production
-cors_origins = ["*"] if settings.DEBUG else settings.ALLOWED_ORIGINS
+# CORS Configuration — Development allows all localhost, Production is restricted
+if settings.DEBUG:
+    # Development: Allow all localhost origins with credentials for testing
+    cors_origins = settings.ALLOWED_ORIGINS + [
+        "http://localhost",
+        "http://127.0.0.1",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+    ]
+else:
+    # Production: Only allow configured origins
+    cors_origins = settings.ALLOWED_ORIGINS
 
 app.add_middleware(CORSMiddleware,
     allow_origins=cors_origins,
-    allow_origin_regex=r"http://localhost:.*" if settings.DEBUG else None,
+    allow_origin_regex=r"http://localhost.*" if settings.DEBUG else None,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 app.include_router(auth.router,     prefix="/api/v1/auth",     tags=["Auth"])

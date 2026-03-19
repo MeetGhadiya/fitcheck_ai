@@ -1,0 +1,45 @@
+# FitCheck AI — Backend Dependencies
+# Install: pip install -r requirements.txt
+
+# Core
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+python-multipart==0.0.9
+
+# Database
+sqlalchemy[asyncio]==2.0.30
+asyncpg==0.29.0
+alembic==1.13.1
+
+# Cache / Rate limiting
+redis[hiredis]==5.0.4
+
+# Auth
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+pydantic[email]==2.7.1
+pydantic-settings==2.3.0
+google-auth==2.30.0
+
+# AI — Replicate (paid path)
+replicate==0.30.0
+
+# HTTP client (HuggingFace + scraper)
+httpx==0.27.0
+
+# Image processing
+Pillow==10.3.0
+
+# Storage (S3 / Cloudflare R2)
+boto3==1.34.110
+
+# Payments — Razorpay (credit top-ups only)
+razorpay==1.4.2
+
+# Email
+python-dotenv==1.0.1
+aiofiles==23.2.1
+
+# Testing
+pytest==8.2.0
+pytest-asyncio==0.23.7

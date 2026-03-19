@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FitCheck AI – Try Before You Buy</title>
+<style>
+/* ── Reset ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+  background: #0b1120; color: #e2e8f0;
+  overflow-x: hidden; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { text-decoration: none; color: inherit; }
+button { border: none; background: none; font-family: inherit; font-size: inherit; cursor: pointer; }
+input, select { font-family: inherit; }
+img { display: block; max-width: 100%; }
+
+/* ── Tokens ──────────────────────────────────────── */
+:root {
+  --brand:     #0ea5e9;
+  --brand-dk:  #0284c7;
+  --purple:    #7c3aed;
+  --orange:    #f97316;
+  --orange-dk: #ea580c;
+  --bg:        #0b1120;
+  --surf:      #131c2e;
+  --surf-hi:   #1a2540;
+  --bdr:       #1e2d45;
+  --text:      #e2e8f0;
+  --muted:     #94a3b8;
+  --faint:     #475569;
+  --green:     #22c55e;
+  --r:         12px;
+  --r-lg:      16px;
+  --r-xl:      24px;
+}
+
+/* ── Screens ─────────────────────────────────────── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: block; }
+
+/* ── Layout helpers ──────────────────────────────── */
+.wrap   { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+.row    { display: flex; align-items: center; }
+.col    { display: flex; flex-direction: column; }
+.center { display: flex; align-items: center; justify-content: center; }
+.between{ display: flex; align-items: center; justify-content: space-between; }
+.gap2   { gap: 8px; }  .gap3 { gap: 12px; } .gap4 { gap: 16px; }
+.gap6   { gap: 24px; } .gap8 { gap: 32px; }
+.fwrap  { flex-wrap: wrap; }
+
+/* ── Typography ──────────────────────────────────── */
+.big-head { font-size: clamp(40px, 5.5vw, 70px); font-weight: 900; line-height: 1.04; letter-spacing: -0.02em; color: #fff; }
+.sec-head { font-size: clamp(26px, 3.5vw, 46px); font-weight: 800; color: #fff; line-height: 1.1; }
+.label    { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; }
+
+/* ── Card ────────────────────────────────────────── */
+.card    { background: var(--surf);    border: 1px solid var(--bdr);    border-radius: var(--r-lg); }
+.card-hi { background: var(--surf-hi); border: 1px solid #243557; border-radius: var(--r-lg); }
+
+/* ── Buttons ─────────────────────────────────────── */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-radius: var(--r); transition: transform .18s, box-shadow .18s, background .18s; white-space: nowrap; }
+.btn:hover  { transform: translateY(-1px); }
+.btn:active { transform: translateY(0px); }
+.btn-primary { background: linear-gradient(135deg,var(--brand),var(--brand-dk)); color:#fff; }
+.btn-primary:hover { box-shadow: 0 0 24px rgba(14,165,233,.5); }
+.btn-ghost   { background: var(--surf-hi); color: var(--text); border: 1px solid var(--bdr); }
+.btn-ghost:hover { background: #243557; }
+.btn-orange  { background: linear-gradient(135deg,var(--orange),var(--orange-dk)); color:#fff; }
+.btn-orange:hover { box-shadow: 0 0 24px rgba(249,115,22,.45); }
+.btn-dkout   { background: #1a1a2e; color: var(--text); border: 1px solid #2d2d4e; }
+.btn-dkout:hover { background: #2d2d4e; }
+.sm  { padding: 8px 18px; font-size: 13px; }
+.md  { padding: 10px 22px; font-size: 14px; }
+.lg  { padding: 14px 32px; font-size: 16px; }
+.xl  { padding: 16px 42px; font-size: 18px; }
+.glow-b { box-shadow: 0 0 20px rgba(14,165,233,.35); }
+
+/* ── Badge ───────────────────────────────────────── */
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.bdg-brand { color:var(--brand); background:rgba(14,165,233,.1); border:1px solid rgba(14,165,233,.2); }
+.bdg-green { color:var(--green); background:rgba(34,197,94,.1);  border:1px solid rgba(34,197,94,.2); }
+
+/* ── Nav ─────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 48px;
+  background: rgba(11,17,32,.84); backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--bdr);
+}
+.logo { display: flex; align-items: center; gap: 8px; font-size: 19px; font-weight: 800; color: #fff; }
+.nav-links { display: flex; gap: 30px; list-style: none; font-size: 14px; font-weight: 500; color: var(--muted); }
+.nav-links a { transition: color .2s; } .nav-links a:hover { color:#fff; }
+.nav-login { font-size:14px; font-weight:600; color:var(--muted); padding:8px 14px; transition:color .2s; }
+.nav-login:hover { color:#fff; }
+
+/* ── Hero ────────────────────────────────────────── */
+.hero { background: radial-gradient(ellipse 80% 60% at 65% 40%,rgba(14,165,233,.12) 0%,transparent 70%), radial-gradient(ellipse 50% 50% at 80% 80%,rgba(124,58,237,.08) 0%,transparent 60%), var(--bg); padding: 80px 48px 96px; }
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+.hero-sub { font-size: 17px; color: var(--muted); max-width: 430px; line-height: 1.72; }
+.avatars { display: flex; }
+.avatars span { width:30px; height:30px; border-radius:50%; border:2px solid var(--bg); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; margin-left:-7px; }
+.avatars span:first-child { margin-left:0; }
+.hero-mockup { position:relative; border-radius:22px; overflow:visible; background:transparent; border:none; box-shadow:none; }
+.hero-glow   { position:absolute; inset:-36px; background:rgba(14,165,233,.1); border-radius:40px; filter:blur(40px); z-index:-1; }
+.hero-chip   { position:absolute; bottom:0; left:0; right:0; padding:16px; background:linear-gradient(to top,rgba(0,0,0,.9),transparent); }
+.hero-chip-inner { background:rgba(26,37,64,.95); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; }
+
+/* ── Section ─────────────────────────────────────── */
+.sec     { padding: 72px 48px; }
+.sec-sm  { padding: 44px 48px; }
+.divider { border:none; border-top:1px solid var(--bdr); }
+.sec-intro { text-align:center; margin-bottom:48px; }
+.sec-sub  { color:var(--muted); font-size:16px; line-height:1.65; }
+
+/* ── Step cards ──────────────────────────────────── */
+.steps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.step-card  { background:var(--surf); border:1px solid var(--bdr); border-radius:20px; padding:30px; display:flex; flex-direction:column; gap:14px; transition:border-color .2s; }
+.step-card:hover { border-color:rgba(14,165,233,.45); }
+.step-ico   { width:54px; height:54px; border-radius:16px; background:rgba(14,165,233,.1); color:var(--brand); display:flex; align-items:center; justify-content:center; transition:background .2s,color .2s; }
+.step-card:hover .step-ico { background:var(--brand); color:#fff; }
+.step-num   { font-size:34px; font-weight:900; color:rgba(255,255,255,.07); }
+
+/* ── Feature rows ────────────────────────────────── */
+.feat-row { display:flex; align-items:center; gap:12px; padding:13px 16px; background:var(--surf); border:1px solid var(--bdr); border-radius:var(--r); }
+
+/* ── Compare ─────────────────────────────────────── */
+.cmp-wrap { position:relative; cursor:ew-resize; user-select:none; border-radius:20px; overflow:hidden; aspect-ratio:3/4; border:1px solid var(--bdr); box-shadow:0 24px 64px rgba(0,0,0,.5); }
+.cmp-layer{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+.cmp-before{ overflow:hidden; }
+.cmp-before-inner { position:absolute; inset:0; width:200%; display:flex; align-items:center; }
+.cmp-handle { position:absolute; top:0; bottom:0; width:2px; background:rgba(255,255,255,.9); z-index:10; display:flex; align-items:center; justify-content:center; }
+.cmp-btn    { width:34px; height:34px; border-radius:50%; background:#fff; color:var(--bg); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(0,0,0,.5); font-size:13px; font-weight:900; }
+.cmp-tag    { position:absolute; bottom:14px; padding:4px 10px; border-radius:6px; font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; }
+.cmp-after-tag  { right:14px; background:var(--brand); color:#fff; }
+.cmp-before-tag { left:14px; background:rgba(15,23,42,.9); color:#fff; }
+
+/* ── Pills ───────────────────────────────────────── */
+.pill { display:inline-flex; align-items:center; gap:6px; padding:8px 18px; border-radius:999px; font-size:13px; color:var(--muted); background:var(--surf); border:1px solid var(--bdr); }
+
+/* ── CTA banner ──────────────────────────────────── */
+.cta-banner { position:relative; overflow:hidden; border-radius:26px; padding:60px 40px; background:var(--surf); border:1px solid var(--bdr); text-align:center; }
+.cta-banner::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(14,165,233,.08),rgba(124,58,237,.08)); }
+
+/* ── Footer ──────────────────────────────────────── */
+.footer { border-top:1px solid var(--bdr); padding:44px 48px; display:flex; justify-content:space-between; align-items:flex-start; gap:36px; flex-wrap:wrap; }
+.footer-col { display:flex; flex-direction:column; gap:10px; }
+.footer-col a { font-size:14px; color:var(--faint); transition:color .2s; }
+.footer-col a:hover { color:#fff; }
+.footer-btm { border-top:1px solid var(--bdr); padding:18px 48px; display:flex; justify-content:space-between; font-size:12px; color:var(--faint); }
+
+/* ── Studio nav ──────────────────────────────────── */
+.s-nav { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:13px 40px; background:rgba(11,17,32,.84); backdrop-filter:blur(18px); border-bottom:1px solid var(--bdr); }
+.s-links { display:flex; gap:22px; list-style:none; font-size:14px; font-weight:600; }
+.s-links li { color:var(--muted); cursor:pointer; padding-bottom:2px; transition:color .2s; }
+.s-links li:hover { color:#fff; }
+.s-links li.act { color:#fff; border-bottom:2px solid var(--brand); }
+.ico-btn { width:34px; height:34px; border-radius:10px; background:var(--surf); border:1px solid var(--bdr); display:flex; align-items:center; justify-content:center; color:var(--muted); transition:background .2s,color .2s; }
+.ico-btn:hover { background:var(--surf-hi); color:#fff; }
+.av-btn  { width:34px; height:34px; border-radius:10px; background:rgba(14,165,233,.15); border:1px solid rgba(14,165,233,.3); display:flex; align-items:center; justify-content:center; color:var(--brand); font-weight:700; font-size:14px; }
+
+/* ── Studio body ─────────────────────────────────── */
+.studio-body { max-width:1200px; margin:0 auto; padding:22px 40px 60px; }
+.studio-grid { display:grid; grid-template-columns:400px 1fr; gap:22px; }
+.studio-col  { display:flex; flex-direction:column; gap:16px; }
+
+/* ── Input card ──────────────────────────────────── */
+.in-card { background:var(--surf); border:1px solid var(--bdr); border-radius:16px; padding:18px; }
+.in-hdr  { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.in-ico  { width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.ico-b   { background:rgba(14,165,233,.15); } .ico-o { background:rgba(249,115,22,.15); } .ico-p { background:rgba(124,58,237,.15); }
+
+/* ── Form ────────────────────────────────────────── */
+.field    { display:flex; flex-direction:column; gap:5px; }
+.field label { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.fit-in   { width:100%; padding:10px 14px; background:var(--bg); border:1px solid var(--bdr); border-radius:10px; color:var(--text); font-size:14px; outline:none; transition:border-color .2s; }
+.fit-in:focus { border-color:var(--brand); }
+.fit-in::placeholder { color:var(--faint); }
+.fit-in-w { position:relative; }
+.fit-in-w .sfx { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:11px; font-weight:700; color:var(--faint); }
+.fit-in-w .ixr { position:absolute; right:10px; top:50%; transform:translateY(-50%); color:var(--faint); display:flex; }
+select.fit-in { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; background-size:12px; padding-right:32px; }
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+/* ── Upload zone ─────────────────────────────────── */
+.upzone { border:2px dashed var(--bdr); border-radius:14px; padding:26px 14px; text-align:center; cursor:pointer; transition:border-color .2s,background .2s; display:flex; flex-direction:column; align-items:center; gap:9px; }
+.upzone:hover,.upzone:focus { border-color:var(--brand); background:rgba(14,165,233,.04); outline:none; }
+.upzone.done  { border-color:rgba(34,197,94,.5); background:rgba(34,197,94,.04); }
+.up-ico { width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+.up-ico.def  { background:rgba(14,165,233,.1); }
+.up-ico.ok   { background:rgba(34,197,94,.1); }
+
+/* ── Tabs ────────────────────────────────────────── */
+.tab-bar { display:flex; gap:2px; background:var(--bg); border-radius:12px; padding:4px; }
+.tab-btn { padding:5px 14px; border-radius:9px; font-size:13px; font-weight:600; color:var(--muted); transition:background .2s,color .2s; }
+.tab-btn.act { background:var(--surf-hi); color:#fff; }
+
+/* ── Render area ─────────────────────────────────── */
+.render { min-height:400px; border-radius:14px; position:relative; background:linear-gradient(145deg,#0f1929,var(--surf)); overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.render::after { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 30%,rgba(14,165,233,.05),transparent 70%); pointer-events:none; }
+.gen-ov { position:absolute; inset:0; border-radius:14px; z-index:10; background:rgba(11,17,32,.93); display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
+.gen-ov.on { display:flex; }
+.spinner { width:46px; height:46px; border-radius:50%; border:3px solid var(--bdr); border-top-color:var(--brand); animation:spin .8s linear infinite; }
+.prog-track { width:180px; height:3px; background:var(--bdr); border-radius:99px; overflow:hidden; }
+.prog-fill  { height:100%; background:linear-gradient(90deg,var(--brand),var(--purple)); border-radius:99px; transition:width .45s ease; width:0%; }
+.empty-st   { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:64px 20px; }
+.result-st  { display:none; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:40px 20px; }
+.result-st.on { display:flex; }
+
+/* ── Result bar ──────────────────────────────────── */
+.res-bar  { display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:14px; }
+.res-bar.on { display:flex; }
+.res-meta { display:flex; align-items:center; gap:14px; font-size:12px; }
+.ai-sug   { display:none; align-items:center; justify-content:space-between; gap:12px; background:var(--surf); border:1px solid rgba(249,115,22,.2); border-radius:14px; padding:13px 15px; }
+.ai-sug.on { display:flex; }
+.ai-ico { width:30px; height:30px; border-radius:9px; background:rgba(249,115,22,.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+/* ── Stats ───────────────────────────────────────── */
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.stat  { background:var(--surf); border:1px solid var(--bdr); border-radius:var(--r); padding:13px; text-align:center; }
+.sv    { font-size:23px; font-weight:900; color:var(--brand); }
+.sl    { font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* ── Generate btn ────────────────────────────────── */
+.gen-btn { width:100%; padding:15px 24px; font-size:17px; font-weight:700; color:#fff; border:none; border-radius:14px; background:linear-gradient(135deg,var(--purple),var(--brand)); cursor:pointer; transition:transform .2s; animation:pglow 2.5s ease-in-out infinite; display:flex; align-items:center; justify-content:center; gap:8px; }
+.gen-btn:hover { transform:translateY(-2px); }
+
+/* ── Modal ───────────────────────────────────────── */
+.m-ov { position:fixed; inset:0; background:rgba(0,0,0,.74); backdrop-filter:blur(10px); z-index:100; display:none; align-items:center; justify-content:center; padding:16px; }
+.m-ov.open { display:flex; }
+.modal { position:relative; width:100%; max-width:370px; border-radius:28px; overflow:hidden; background:#1a1020; border:1px solid #2d1e40; }
+.m-top { height:158px; position:relative; overflow:hidden; background:linear-gradient(135deg,#2d1e40,#1a1020); display:flex; align-items:center; justify-content:center; }
+.m-glow { position:absolute; inset:0; background:radial-gradient(circle at 50% 65%,rgba(249,115,22,.25),transparent 70%); }
+.m-close { position:absolute; top:13px; right:13px; z-index:5; width:28px; height:28px; border-radius:50%; background:rgba(0,0,0,.3); color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:15px; transition:color .2s; }
+.m-close:hover { color:#fff; }
+.m-body { padding:26px 30px 8px; text-align:center; }
+.m-brand { width:46px; height:46px; border-radius:15px; margin:0 auto 12px; background:rgba(249,115,22,.2); display:flex; align-items:center; justify-content:center; font-size:20px; }
+.m-foot { padding:12px 30px 26px; text-align:center; }
+.m-bar  { height:3px; background:linear-gradient(90deg,var(--orange),var(--purple)); }
+
+/* ── Anims ───────────────────────────────────────── */
+@keyframes spin  { to { transform:rotate(360deg); } }
+@keyframes fup   { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pglow { 0%,100%{box-shadow:0 0 14px rgba(14,165,233,.3)} 50%{box-shadow:0 0 28px rgba(14,165,233,.6)} }
+.fu  { animation:fup .55s ease both; }
+.d1  { animation-delay:.05s; } .d2 { animation-delay:.16s; }
+.d3  { animation-delay:.27s; } .d4 { animation-delay:.38s; }
+
+/* ── Noise ───────────────────────────────────────── */
+body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:999; opacity:.018; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* ── Hero floating tags ──────────────────────────── */
+.htag {
+  position: absolute;
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(19,28,46,.92); border: 1px solid var(--bdr);
+  border-radius: 999px; padding: 5px 10px 5px 7px;
+  font-size: 12px; font-weight: 600; color: var(--text);
+  backdrop-filter: blur(8px);
+  animation: floatTag 3s ease-in-out infinite;
+  white-space: nowrap;
+}
+@keyframes floatTag {
+  0%,100% { transform: translateY(0px); opacity:.85; }
+  50%      { transform: translateY(-6px); opacity:1; }
+}
+
+/* ── Hero floating tags ──────────────────────────── */
+.htag {
+  position: absolute;
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(19,28,46,.92); border: 1px solid var(--bdr);
+  border-radius: 999px; padding: 5px 10px 5px 7px;
+  font-size: 12px; font-weight: 600; color: var(--text);
+  backdrop-filter: blur(8px);
+  animation: floatTag 3s ease-in-out infinite;
+  white-space: nowrap;
+}
+@keyframes floatTag {
+  0%,100% { transform: translateY(0px); opacity:.85; }
+  50%      { transform: translateY(-6px); opacity:1; }
+}
+
+/* ── Transformation panels ───────────────────────── */
+.trx-panel {
+  position: relative; border-radius: 16px; overflow: hidden;
+  background: linear-gradient(160deg, #141e30, #0f1829);
+  border: 1px solid var(--bdr);
+  display: flex; align-items: stretch;
+  padding-bottom: 88px;
+}
+.trx-panel-after {
+  border-color: rgba(14,165,233,0.35);
+  box-shadow: 0 0 30px rgba(14,165,233,0.12), inset 0 0 60px rgba(14,165,233,0.03);
+}
+.trx-label {
+  position: absolute; top: 10px; left: 10px; z-index: 5;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 10px; font-weight: 800; letter-spacing: .1em;
+  display: flex; align-items: center; gap: 5px;
+}
+.trx-label-before { background: rgba(71,85,105,.7); color: #94a3b8; border: 1px solid var(--bdr); }
+.trx-label-after  { background: rgba(14,165,233,.15); color: #0ea5e9; border: 1px solid rgba(14,165,233,.3); }
+
+/* ── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:var(--bg); } ::-webkit-scrollbar-thumb { background:var(--bdr); border-radius:3px; }
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width:920px) {
+  .hero-grid,.studio-grid { grid-template-columns:1fr; gap:32px; }
+  .steps-grid { grid-template-columns:1fr; }
+  .nav,.hero,.sec,.sec-sm,.studio-body,.footer,.footer-btm { padding-left:20px; padding-right:20px; }
+  .s-nav { padding:13px 20px; }
+  .nav-links,.s-links { display:none; }
+  .big-head { font-size:38px; }
+}
+@media (max-width:540px) {
+  .stats { grid-template-columns:repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- SVG icon helpers (inline, no network) -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="ic-hanger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 18H3.62a1 1 0 0 1-.74-1.67L12 7l9.12 9.33A1 1 0 0 1 20.38 18z"/><path d="M12 7V3"/><circle cx="12" cy="3" r="1"/></symbol>
+  <symbol id="ic-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>
+  <symbol id="ic-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="ic-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+  <symbol id="ic-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+  <symbol id="ic-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+  <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="ic-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></symbol>
+  <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="ic-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+  <symbol id="ic-hist" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.41"/></symbol>
+  <symbol id="ic-zoom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></symbol>
+  <symbol id="ic-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></symbol>
+  <symbol id="ic-person" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="ic-bag"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
+  <symbol id="ic-ruler"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="ic-dl"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+  <symbol id="ic-check"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="ic-mail"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+  <symbol id="ic-img"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+</svg>
+<script>
+function i(id,w,h,stroke){
+  w=w||20;h=h||20;
+  var s=stroke||'currentColor';
+  return '<svg width="'+w+'" height="'+h+'" style="display:inline-block;flex-shrink:0"><use href="#'+id+'" stroke="'+s+'"/></svg>';
+}
+</script>
+
+<!-- ═══════════════════ LANDING ═══════════════════ -->
+<div id="screen-landing" class="screen active">
+
+  <nav class="nav">
+    <div class="logo" onclick="goTo('landing')" style="cursor:pointer">
+      <svg width="26" height="26"><use href="#ic-hanger" stroke="#0ea5e9"/></svg>
+      FitCheck AI
+    </div>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How it Works</a></li>
+      <li><a href="javascript:void(0)" onclick="goTo('pricing')">Pricing</a></li>
+      <li><a href="javascript:void(0)" onclick="goTo('b2b')">Business</a></li>
+      <li><a href="#privacy">Privacy</a></li>
+    </ul>
+    <div class="row gap3">
+      <button onclick="toggleTheme()" style="width:34px;height:34px;border-radius:10px;background:var(--surf);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px" id="theme-btn" title="Toggle theme">🌙</button>
+      <button class="nav-login" onclick="goTo('dashboard')">Dashboard</button>
+      <button class="nav-login" onclick="openLogin()">Login</button>
+      <button class="btn btn-primary sm glow-b" onclick="tryGoToStudio()">Try Now</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="col gap6">
+          <div class="fu d1"><span class="badge bdg-brand"><span style="width:6px;height:6px;border-radius:50%;background:#0ea5e9"></span>AI-Powered Fashion</span></div>
+          <h1 class="big-head fu d2">Try Before You <span style="color:#0ea5e9">Buy</span> – Instantly</h1>
+          <p class="hero-sub fu d3">Upload your photo and see how any wearable product looks on you — clothes, watches, jewellery, glasses and more — before checkout. No returns, just perfect fits.</p>
+          <div class="row gap4 fwrap fu d4">
+            <button class="btn btn-primary xl glow-b" onclick="tryGoToStudio()">Try Now →</button>
+          </div>
+          <div class="row gap3 fu d4" style="color:var(--faint);font-size:14px">
+            <div class="avatars">
+              <span style="background:rgba(14,165,233,.22);color:#0ea5e9">A</span>
+              <span style="background:rgba(124,58,237,.22);color:#a78bfa">R</span>
+              <span style="background:rgba(249,115,22,.22);color:#fb923c">S</span>
+            </div>
+            Joined by <strong style="color:var(--muted);margin:0 3px">10k+</strong> fashion enthusiasts
+          </div>
+        </div>
+        <div style="position:relative">
+          <div class="hero-glow"></div>
+          <!-- Transformation card -->
+          <div class="hero-mockup" style="overflow:visible;background:transparent;border:none;box-shadow:none;">
+
+            <!-- Before / After panels side by side -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;height:100%">
+
+              <!-- BEFORE panel -->
+              <div class="trx-panel" id="trx-before">
+                <div class="trx-label trx-label-before">BEFORE</div>
+                <!-- Realistic person SVG in casual tee -->
+                <svg viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+                  <defs>
+                    <radialGradient id="skinGrad" cx="50%" cy="40%" r="60%">
+                      <stop offset="0%" stop-color="#f5c9a0"/>
+                      <stop offset="100%" stop-color="#e0a070"/>
+                    </radialGradient>
+                    <radialGradient id="hairGrad" cx="50%" cy="20%" r="70%">
+                      <stop offset="0%" stop-color="#3d2408"/>
+                      <stop offset="100%" stop-color="#1a0e04"/>
+                    </radialGradient>
+                    <linearGradient id="teeLG" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#b0b8c8"/>
+                      <stop offset="100%" stop-color="#8a9ab0"/>
+                    </linearGradient>
+                    <linearGradient id="jeansLG" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#3a5080"/>
+                      <stop offset="100%" stop-color="#22305a"/>
+                    </linearGradient>
+                    <filter id="softShadow"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.3"/></filter>
+                    <linearGradient id="shoeL" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#ddd"/>
+                      <stop offset="100%" stop-color="#aaa"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Shadow on ground -->
+                  <ellipse cx="100" cy="415" rx="52" ry="7" fill="rgba(0,0,0,0.18)"/>
+                  <!-- Hair back -->
+                  <ellipse cx="100" cy="54" rx="38" ry="42" fill="url(#hairGrad)"/>
+                  <!-- Head -->
+                  <ellipse cx="100" cy="66" rx="34" ry="38" fill="url(#skinGrad)"/>
+                  <!-- Hair top/front -->
+                  <path d="M66 50 Q72 28 100 26 Q128 28 134 50 Q128 38 100 36 Q72 38 66 50Z" fill="url(#hairGrad)"/>
+                  <!-- Ear left -->
+                  <ellipse cx="67" cy="70" rx="6" ry="9" fill="#e0a070"/>
+                  <!-- Ear right -->
+                  <ellipse cx="133" cy="70" rx="6" ry="9" fill="#e0a070"/>
+                  <!-- Neck -->
+                  <rect x="88" y="100" width="24" height="24" rx="6" fill="#e8b080"/>
+                  <!-- Eyes -->
+                  <ellipse cx="87" cy="64" rx="6" ry="7" fill="#fff"/>
+                  <ellipse cx="113" cy="64" rx="6" ry="7" fill="#fff"/>
+                  <ellipse cx="88" cy="65" rx="3.5" ry="4" fill="#3d2408"/>
+                  <ellipse cx="114" cy="65" rx="3.5" ry="4" fill="#3d2408"/>
+                  <circle cx="89" cy="64" r="1.2" fill="#fff"/>
+                  <circle cx="115" cy="64" r="1.2" fill="#fff"/>
+                  <!-- Eyebrows -->
+                  <path d="M80 55 Q87 51 95 54" stroke="#3d2408" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                  <path d="M105 54 Q113 51 120 55" stroke="#3d2408" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                  <!-- Nose -->
+                  <path d="M99 70 Q96 80 98 84 Q100 86 102 84 Q104 80 101 70" fill="none" stroke="#c88060" stroke-width="1.5" stroke-linecap="round"/>
+                  <!-- Lips -->
+                  <path d="M89 93 Q100 99 111 93" stroke="#c06050" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                  <path d="M91 93 Q100 88 109 93" fill="#e07060" stroke="none"/>
+
+                  <!-- T-SHIRT body -->
+                  <path d="M60 124 Q52 128 40 160 Q36 175 38 240 Q38 248 100 250 Q162 248 162 240 Q164 175 160 160 Q148 128 140 124 Q126 118 100 116 Q74 118 60 124Z" fill="url(#teeLG)"/>
+                  <!-- T-shirt collar -->
+                  <path d="M84 116 Q100 126 116 116 Q108 110 100 110 Q92 110 84 116Z" fill="#a0aabb"/>
+                  <!-- T-shirt sleeves -->
+                  <path d="M60 124 Q44 126 34 148 Q28 162 34 170 Q44 176 54 168 Q56 156 62 144 Q64 136 66 128Z" fill="url(#teeLG)"/>
+                  <path d="M140 124 Q156 126 166 148 Q172 162 166 170 Q156 176 146 168 Q144 156 138 144 Q136 136 134 128Z" fill="url(#teeLG)"/>
+                  <!-- T-shirt fold lines -->
+                  <path d="M100 130 Q98 170 100 200" stroke="#9aa8bc" stroke-width="1" fill="none" opacity="0.5"/>
+                  <path d="M76 140 Q78 180 80 210" stroke="#9aa8bc" stroke-width="1" fill="none" opacity="0.4"/>
+                  <!-- Left arm skin (wrist) -->
+                  <path d="M34 168 Q28 178 32 192 Q36 196 42 194 Q48 180 54 168Z" fill="url(#skinGrad)"/>
+                  <!-- Right arm skin -->
+                  <path d="M166 168 Q172 178 168 192 Q164 196 158 194 Q152 180 146 168Z" fill="url(#skinGrad)"/>
+
+                  <!-- Jeans -->
+                  <path d="M40 246 Q38 280 36 340 Q34 370 38 400 Q46 410 62 408 Q72 408 76 396 Q82 356 84 310 Q86 280 88 250Z" fill="url(#jeansLG)"/>
+                  <path d="M160 246 Q162 280 164 340 Q166 370 162 400 Q154 410 138 408 Q128 408 124 396 Q118 356 116 310 Q114 280 112 250Z" fill="url(#jeansLG)"/>
+                  <!-- Jeans center seam -->
+                  <path d="M88 250 Q94 290 100 340 Q106 290 112 250" fill="#2e4070" stroke="#1e305a" stroke-width="1"/>
+                  <!-- Jeans highlight -->
+                  <path d="M50 270 Q52 310 54 350" stroke="#4a6090" stroke-width="2" fill="none" opacity="0.5"/>
+                  <path d="M150 270 Q148 310 146 350" stroke="#4a6090" stroke-width="2" fill="none" opacity="0.5"/>
+                  <!-- Belt -->
+                  <rect x="40" y="244" width="120" height="10" rx="3" fill="#2a1e10"/>
+                  <rect x="93" y="243" width="14" height="12" rx="2" fill="#c8a840"/>
+
+                  <!-- Shoes - plain white sneakers -->
+                  <path d="M36 398 Q28 402 26 410 Q28 418 50 418 Q68 418 72 410 Q70 400 62 398Z" fill="url(#shoeL)" stroke="#ccc" stroke-width="1"/>
+                  <path d="M164 398 Q172 402 174 410 Q172 418 150 418 Q132 418 128 410 Q130 400 138 398Z" fill="url(#shoeL)" stroke="#ccc" stroke-width="1"/>
+                  <path d="M28 410 Q50 406 70 410" stroke="#ddd" stroke-width="1" fill="none" opacity="0.7"/>
+                  <path d="M172 410 Q150 406 130 410" stroke="#ddd" stroke-width="1" fill="none" opacity="0.7"/>
+
+                  <!-- "BEFORE" scan markers (dim) -->
+                  <rect x="10" y="10" width="20" height="3" rx="1" fill="#475569" opacity="0.5"/>
+                  <rect x="10" y="10" width="3" height="20" rx="1" fill="#475569" opacity="0.5"/>
+                  <rect x="170" y="10" width="20" height="3" rx="1" fill="#475569" opacity="0.5"/>
+                  <rect x="187" y="10" width="3" height="20" rx="1" fill="#475569" opacity="0.5"/>
+                  <rect x="10" y="397" width="20" height="3" rx="1" fill="#475569" opacity="0.5"/>
+                  <rect x="10" y="377" width="3" height="20" rx="1" fill="#475569" opacity="0.5"/>
+                  <rect x="170" y="397" width="20" height="3" rx="1" fill="#475569" opacity="0.5"/>
+                  <rect x="187" y="377" width="3" height="20" rx="1" fill="#475569" opacity="0.5"/>
+                </svg>
+              </div>
+
+              <!-- AFTER panel -->
+              <div class="trx-panel trx-panel-after" id="trx-after">
+                <div class="trx-label trx-label-after">
+                  <span style="width:6px;height:6px;border-radius:50%;background:#0ea5e9;display:inline-block;animation:pglow 1.5s infinite"></span>
+                  AI FIT
+                </div>
+                <!-- Same person, now wearing the product -->
+                <svg viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+                  <defs>
+                    <radialGradient id="skinGrad2" cx="50%" cy="40%" r="60%">
+                      <stop offset="0%" stop-color="#f5c9a0"/>
+                      <stop offset="100%" stop-color="#e0a070"/>
+                    </radialGradient>
+                    <radialGradient id="hairGrad2" cx="50%" cy="20%" r="70%">
+                      <stop offset="0%" stop-color="#3d2408"/>
+                      <stop offset="100%" stop-color="#1a0e04"/>
+                    </radialGradient>
+                    <!-- Jacket gradient - rich burgundy/charcoal -->
+                    <linearGradient id="jacketLG" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#2c1a2e"/>
+                      <stop offset="50%" stop-color="#1e1220"/>
+                      <stop offset="100%" stop-color="#130c16"/>
+                    </linearGradient>
+                    <linearGradient id="jacketHL" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="rgba(120,80,140,0.4)"/>
+                      <stop offset="50%" stop-color="rgba(80,40,100,0.1)"/>
+                      <stop offset="100%" stop-color="rgba(40,20,60,0.3)"/>
+                    </linearGradient>
+                    <linearGradient id="jeansLG2" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#3a5080"/>
+                      <stop offset="100%" stop-color="#22305a"/>
+                    </linearGradient>
+                    <linearGradient id="shoeL2" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#222"/>
+                      <stop offset="100%" stop-color="#111"/>
+                    </linearGradient>
+                    <linearGradient id="innerLG" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#8b3a3a"/>
+                      <stop offset="100%" stop-color="#6b2020"/>
+                    </linearGradient>
+                    <filter id="glowF"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                  </defs>
+                  <!-- AI glow aura behind figure -->
+                  <ellipse cx="100" cy="220" rx="80" ry="200" fill="rgba(14,165,233,0.04)"/>
+
+                  <!-- Shadow on ground -->
+                  <ellipse cx="100" cy="415" rx="55" ry="8" fill="rgba(0,0,0,0.25)"/>
+                  <!-- Hair back -->
+                  <ellipse cx="100" cy="54" rx="38" ry="42" fill="url(#hairGrad2)"/>
+                  <!-- Head — same face -->
+                  <ellipse cx="100" cy="66" rx="34" ry="38" fill="url(#skinGrad2)"/>
+                  <!-- Hair top -->
+                  <path d="M66 50 Q72 28 100 26 Q128 28 134 50 Q128 38 100 36 Q72 38 66 50Z" fill="url(#hairGrad2)"/>
+                  <!-- Ear left -->
+                  <ellipse cx="67" cy="70" rx="6" ry="9" fill="#e0a070"/>
+                  <!-- Ear right -->
+                  <ellipse cx="133" cy="70" rx="6" ry="9" fill="#e0a070"/>
+                  <!-- Neck -->
+                  <rect x="88" y="100" width="24" height="24" rx="6" fill="#e8b080"/>
+                  <!-- Eyes -->
+                  <ellipse cx="87" cy="64" rx="6" ry="7" fill="#fff"/>
+                  <ellipse cx="113" cy="64" rx="6" ry="7" fill="#fff"/>
+                  <ellipse cx="88" cy="65" rx="3.5" ry="4" fill="#3d2408"/>
+                  <ellipse cx="114" cy="65" rx="3.5" ry="4" fill="#3d2408"/>
+                  <circle cx="89" cy="64" r="1.2" fill="#fff"/>
+                  <circle cx="115" cy="64" r="1.2" fill="#fff"/>
+                  <!-- Eyebrows -->
+                  <path d="M80 55 Q87 51 95 54" stroke="#3d2408" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                  <path d="M105 54 Q113 51 120 55" stroke="#3d2408" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                  <!-- Nose -->
+                  <path d="M99 70 Q96 80 98 84 Q100 86 102 84 Q104 80 101 70" fill="none" stroke="#c88060" stroke-width="1.5" stroke-linecap="round"/>
+                  <!-- Lips — slight smile -->
+                  <path d="M89 93 Q100 100 111 93" stroke="#c06050" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                  <path d="M91 94 Q100 89 109 94" fill="#e07060" stroke="none"/>
+
+                  <!-- PREMIUM JACKET body -->
+                  <path d="M56 122 Q44 128 34 158 Q28 178 30 248 Q30 256 100 258 Q170 256 170 248 Q172 178 166 158 Q156 128 144 122 Q126 114 100 112 Q74 114 56 122Z" fill="url(#jacketLG)"/>
+                  <!-- Jacket highlight overlay -->
+                  <path d="M56 122 Q44 128 34 158 Q28 178 30 248 Q30 256 100 258 Q170 256 170 248 Q172 178 166 158 Q156 128 144 122 Q126 114 100 112 Q74 114 56 122Z" fill="url(#jacketHL)"/>
+                  <!-- Jacket lapels (V-shape reveal of inner lining) -->
+                  <path d="M88 112 Q86 132 80 155 Q90 150 100 150 Q110 150 120 155 Q114 132 112 112 Q106 118 100 122 Q94 118 88 112Z" fill="url(#innerLG)"/>
+                  <!-- Left lapel flap -->
+                  <path d="M88 112 Q84 130 82 152 Q86 148 92 148 Q94 140 94 130 Q94 120 88 112Z" fill="url(#jacketLG)" stroke="#3a2040" stroke-width="0.5"/>
+                  <!-- Right lapel flap -->
+                  <path d="M112 112 Q116 130 118 152 Q114 148 108 148 Q106 140 106 130 Q106 120 112 112Z" fill="url(#jacketLG)" stroke="#3a2040" stroke-width="0.5"/>
+                  <!-- Center button line -->
+                  <line x1="100" y1="152" x2="100" y2="256" stroke="#3a2040" stroke-width="1" opacity="0.6"/>
+                  <!-- Buttons -->
+                  <circle cx="100" cy="168" r="3" fill="#1a0e1e" stroke="#5a3a6a" stroke-width="0.8"/>
+                  <circle cx="100" cy="188" r="3" fill="#1a0e1e" stroke="#5a3a6a" stroke-width="0.8"/>
+                  <circle cx="100" cy="208" r="3" fill="#1a0e1e" stroke="#5a3a6a" stroke-width="0.8"/>
+                  <!-- Jacket pocket left -->
+                  <path d="M48 200 Q46 208 48 218 Q58 222 68 218 Q70 208 68 200 Q58 196 48 200Z" fill="none" stroke="#3a2040" stroke-width="1.2"/>
+                  <path d="M48 200 Q58 197 68 200" stroke="#3a2040" stroke-width="1.5" fill="none"/>
+                  <!-- Jacket pocket right -->
+                  <path d="M152 200 Q150 208 152 218 Q142 222 132 218 Q130 208 132 200 Q142 196 152 200Z" fill="none" stroke="#3a2040" stroke-width="1.2"/>
+                  <path d="M152 200 Q142 197 132 200" stroke="#3a2040" stroke-width="1.5" fill="none"/>
+                  <!-- Jacket sleeves -->
+                  <path d="M56 122 Q38 128 28 154 Q20 174 24 196 Q30 208 42 206 Q54 200 58 186 Q60 164 66 142Z" fill="url(#jacketLG)"/>
+                  <path d="M56 122 Q38 128 28 154 Q20 174 24 196 Q30 208 42 206 Q54 200 58 186 Q60 164 66 142Z" fill="url(#jacketHL)"/>
+                  <path d="M144 122 Q162 128 172 154 Q180 174 176 196 Q170 208 158 206 Q146 200 142 186 Q140 164 134 142Z" fill="url(#jacketLG)"/>
+                  <path d="M144 122 Q162 128 172 154 Q180 174 176 196 Q170 208 158 206 Q146 200 142 186 Q140 164 134 142Z" fill="url(#jacketHL)"/>
+                  <!-- Sleeve cuffs -->
+                  <path d="M24 192 Q32 208 42 206 Q54 200 58 188 Q48 192 36 190Z" fill="#1a0a1e" stroke="#3a2040" stroke-width="0.8"/>
+                  <path d="M176 192 Q168 208 158 206 Q146 200 142 188 Q152 192 164 190Z" fill="#1a0a1e" stroke="#3a2040" stroke-width="0.8"/>
+                  <!-- Left wrist / hand -->
+                  <path d="M24 196 Q18 204 22 214 Q28 218 36 216 Q42 208 42 200Z" fill="url(#skinGrad2)"/>
+                  <!-- Right wrist / hand -->
+                  <path d="M176 196 Q182 204 178 214 Q172 218 164 216 Q158 208 158 200Z" fill="url(#skinGrad2)"/>
+                  <!-- Jacket shoulder seams -->
+                  <path d="M66 118 Q60 122 56 130" stroke="#3a2040" stroke-width="1" fill="none" opacity="0.7"/>
+                  <path d="M134 118 Q140 122 144 130" stroke="#3a2040" stroke-width="1" fill="none" opacity="0.7"/>
+                  <!-- Jacket sheen highlight -->
+                  <path d="M60 140 Q58 180 60 220" stroke="rgba(140,80,160,0.25)" stroke-width="8" fill="none" stroke-linecap="round"/>
+                  <path d="M140 140 Q142 180 140 220" stroke="rgba(80,40,100,0.15)" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+                  <!-- Jeans (same as before) -->
+                  <path d="M32 252 Q30 286 28 348 Q26 378 30 406 Q38 416 56 414 Q68 414 72 402 Q78 362 80 316 Q82 286 84 256Z" fill="url(#jeansLG2)"/>
+                  <path d="M168 252 Q170 286 172 348 Q174 378 170 406 Q162 416 144 414 Q132 414 128 402 Q122 362 116 316 Q114 286 116 256Z" fill="url(#jeansLG2)"/>
+                  <path d="M84 256 Q90 296 100 348 Q110 296 116 256" fill="#2e4070" stroke="#1e305a" stroke-width="1"/>
+                  <path d="M44 276 Q46 316 48 356" stroke="#4a6090" stroke-width="2" fill="none" opacity="0.5"/>
+                  <path d="M156 276 Q154 316 152 356" stroke="#4a6090" stroke-width="2" fill="none" opacity="0.5"/>
+                  <!-- Belt -->
+                  <rect x="32" y="250" width="136" height="10" rx="3" fill="#0f0a06"/>
+                  <rect x="93" y="249" width="14" height="12" rx="2" fill="#b89820"/>
+
+                  <!-- Chelsea boots (premium black) -->
+                  <path d="M28 404 Q18 410 16 418 Q20 426 48 426 Q68 426 72 416 Q70 406 58 404Z" fill="url(#shoeL2)" stroke="#333" stroke-width="0.5"/>
+                  <path d="M172 404 Q182 410 184 418 Q180 426 152 426 Q132 426 128 416 Q130 406 142 404Z" fill="url(#shoeL2)" stroke="#333" stroke-width="0.5"/>
+                  <!-- Boot elastic panels -->
+                  <path d="M24 408 Q30 406 36 408" stroke="#555" stroke-width="2" fill="none" stroke-linecap="round"/>
+                  <path d="M176 408 Q170 406 164 408" stroke="#555" stroke-width="2" fill="none" stroke-linecap="round"/>
+                  <!-- Boot shine -->
+                  <path d="M22 412 Q32 408 42 412" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                  <path d="M178 412 Q168 408 158 412" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                  <!-- AI scan line animation over after panel -->
+                  <line x1="10" y1="100" x2="190" y2="100" stroke="#0ea5e9" stroke-width="0.8" stroke-dasharray="6 4" opacity="0">
+                    <animate attributeName="y1" values="30;390;30" dur="2.8s" repeatCount="indefinite"/>
+                    <animate attributeName="y2" values="30;390;30" dur="2.8s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0;0.5;0" dur="2.8s" repeatCount="indefinite"/>
+                  </line>
+                  <!-- AI corner brackets — bright blue -->
+                  <path d="M10 30 L10 14 L26 14" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M190 30 L190 14 L174 14" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M10 390 L10 406 L26 406" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M190 390 L190 406 L174 406" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+                  <!-- Fit score dots on body -->
+                  <circle cx="100" cy="155" r="3.5" fill="#0ea5e9" opacity="0.85" filter="url(#glowF)"/>
+                  <circle cx="60" cy="180" r="2.5" fill="#0ea5e9" opacity="0.7" filter="url(#glowF)"/>
+                  <circle cx="140" cy="180" r="2.5" fill="#0ea5e9" opacity="0.7" filter="url(#glowF)"/>
+                  <circle cx="100" cy="220" r="2.5" fill="#0ea5e9" opacity="0.6" filter="url(#glowF)"/>
+                </svg>
+
+                <!-- Fit score chip on after panel -->
+                <div style="position:absolute;bottom:10px;left:8px;right:8px;background:rgba(11,17,32,0.92);border:1px solid rgba(14,165,233,0.3);border-radius:10px;padding:8px 10px;backdrop-filter:blur(8px)">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span style="font-size:10px;font-weight:700;color:#0ea5e9;letter-spacing:.06em">FIT SCORE</span>
+                    </div>
+                    <span style="font-size:14px;font-weight:900;color:#22c55e">98%</span>
+                  </div>
+                  <div style="margin-top:5px;height:3px;background:var(--bdr);border-radius:99px;overflow:hidden">
+                    <div style="width:98%;height:100%;background:linear-gradient(90deg,#0ea5e9,#22c55e);border-radius:99px"></div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-top:5px">
+                    <span style="font-size:10px;color:var(--muted)">Size: M · True to fit</span>
+                    <span style="font-size:10px;color:#22c55e">✓ Perfect Match</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Bottom chip — cycles through products -->
+            <div class="hero-chip" style="position:absolute;bottom:0;left:0;right:0">
+              <div class="hero-chip-inner">
+                <div class="row gap3">
+                  <div style="width:34px;height:34px;border-radius:9px;background:rgba(14,165,233,.15);border:1px solid rgba(14,165,233,.2);display:flex;align-items:center;justify-content:center;font-size:16px" id="chip-icon">🧥</div>
+                  <div>
+                    <div style="font-size:10px;color:var(--muted)">Currently Fitting</div>
+                    <div style="font-size:12px;font-weight:700;color:#fff" id="chip-name">Premium Dark Blazer</div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:5px">
+                  <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pglow 1.5s infinite;display:inline-block"></span>
+                  <span style="font-size:11px;color:#22c55e;font-weight:600">Live</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works -->
+  <section class="sec" id="how-it-works" style="border-top:1px solid var(--bdr)">
+    <div class="wrap">
+      <div class="sec-intro">
+        <h2 class="sec-head" style="margin-bottom:10px">How it Works</h2>
+        <p class="sec-sub">Three simple steps — easier than taking a selfie.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-ico"><svg width="22" height="22"><use href="#ic-upload"/></svg></div>
+          <div class="step-num">01</div>
+          <div>
+            <h3 style="color:#fff;font-size:17px;font-weight:800;margin-bottom:7px">Upload Your Photo</h3>
+            <p style="color:var(--muted);font-size:14px;line-height:1.65">A clear, full-body photo of yourself. Good lighting and a plain background give the best results.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-ico"><svg width="22" height="22"><use href="#ic-link"/></svg></div>
+          <div class="step-num">02</div>
+          <div>
+            <h3 style="color:#fff;font-size:17px;font-weight:800;margin-bottom:7px">Paste Product Link</h3>
+            <p style="color:var(--muted);font-size:14px;line-height:1.65">Paste any Amazon, Flipkart, Zara or Myntra URL. We extract the product image and details automatically.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-ico"><svg width="22" height="22"><use href="#ic-star"/></svg></div>
+          <div class="step-num">03</div>
+          <div>
+            <h3 style="color:#fff;font-size:17px;font-weight:800;margin-bottom:7px">View Your New Look</h3>
+            <p style="color:var(--muted);font-size:14px;line-height:1.65">AI renders the item on your body. Front, side, and 3/4 views. Share, save, or buy with total confidence.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo -->
+  <section class="sec" id="demo">
+    <div class="wrap">
+      <div class="hero-grid" style="gap:80px">
+        <div class="col gap6">
+          <h2 class="sec-head">Experience<br>the Magic</h2>
+          <p class="sec-sub">Drag the slider to compare. The AI rendering is indistinguishable from reality — see how any garment fits your exact body shape.</p>
+          <div class="col gap3">
+            <div class="feat-row"><svg width="17" height="17"><use href="#ic-shield" stroke="#0ea5e9"/></svg><span style="font-size:14px;font-weight:500">99% accuracy in body mapping</span></div>
+            <div class="feat-row"><svg width="17" height="17"><use href="#ic-bolt" stroke="#0ea5e9"/></svg><span style="font-size:14px;font-weight:500">Renders in under 3 seconds</span></div>
+            <div class="feat-row"><svg width="17" height="17"><use href="#ic-clock" stroke="#0ea5e9"/></svg><span style="font-size:14px;font-weight:500">Works for all wearable products</span></div>
+          </div>
+          <div><button class="btn btn-primary lg" onclick="goTo('studio')">Start Your Transformation <svg width="15" height="15"><use href="#ic-arrow-r"/></svg></button></div>
+        </div>
+        <div>
+          <div class="cmp-wrap" id="cmp-wrap">
+            <div class="cmp-layer" style="background:linear-gradient(135deg,#1a2a3a,#0f1929)">
+              <div style="text-align:center"><div style="font-size:76px;line-height:1;margin-bottom:10px">🧍‍♂️</div></div>
+              <span class="cmp-tag cmp-after-tag">After Fit-On</span>
+            </div>
+            <div class="cmp-layer cmp-before" id="cmp-before" style="width:50%">
+              <div class="cmp-before-inner" style="background:linear-gradient(135deg,#243040,#1a2030)">
+                <div style="width:50%;text-align:center"><div style="font-size:76px;line-height:1;margin-bottom:10px">🧍</div></div>
+              </div>
+              <span class="cmp-tag cmp-before-tag">Original Photo</span>
+            </div>
+            <div class="cmp-handle" id="cmp-handle" style="left:50%"><div class="cmp-btn">⟺</div></div>
+          </div>
+          <p style="text-align:center;font-size:12px;color:var(--faint);margin-top:10px">← Drag slider to compare →</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section class="sec-sm" style="border-top:1px solid var(--bdr)">
+    <div class="wrap">
+      <p class="label" style="color:var(--faint);text-align:center;margin-bottom:18px">Works for any wearable product</p>
+      <div class="row fwrap gap3" style="justify-content:center">
+        <span class="pill">👗 Clothing</span><span class="pill">⌚ Watches</span><span class="pill">💍 Jewellery</span>
+        <span class="pill">👓 Glasses</span><span class="pill">👟 Shoes</span><span class="pill">🧢 Hats</span>
+        <span class="pill">👜 Bags</span><span class="pill" style="border-color:rgba(14,165,233,.3);color:var(--brand)">+ More</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy -->
+  <section class="sec-sm" id="privacy" style="border-top:1px solid var(--bdr);text-align:center">
+    <div class="wrap col" style="align-items:center;gap:14px">
+      <span class="badge bdg-green"><svg width="12" height="12"><use href="#ic-lock" stroke="#22c55e"/></svg>Your images are private &amp; never stored</span>
+      <h2 style="font-size:21px;font-weight:800;color:#fff">We take your privacy seriously</h2>
+      <p style="color:var(--muted);max-width:490px;line-height:1.72;font-size:15px">FitCheck AI processes all images locally and discards them immediately after rendering. We never sell your data or use your photos for AI training without consent.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="cta-banner">
+        <div style="position:relative;z-index:1">
+          <h2 style="font-size:clamp(26px,4vw,42px);font-weight:900;color:#fff;margin-bottom:10px">Ready to try it?</h2>
+          <p style="color:var(--muted);margin-bottom:26px;font-size:16px">No signup. No credit card. Just upload and see the magic.</p>
+          <button class="btn btn-primary xl glow-b" onclick="tryGoToStudio()">Start Free Try-On →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div>
+      <div class="logo" style="margin-bottom:10px;font-size:17px">
+        <svg width="21" height="21"><use href="#ic-hanger" stroke="#0ea5e9"/></svg>FitCheck AI
+      </div>
+      <p style="font-size:13px;color:var(--faint);line-height:1.65;max-width:220px">Revolutionising online shopping with AI-powered virtual try-on technology.</p>
+    </div>
+    <div class="row gap8 fwrap" style="align-items:flex-start">
+      <div class="footer-col">
+        <span class="label" style="color:var(--muted);margin-bottom:4px">Product</span>
+        <a href="#how-it-works">How it works</a><a href="#demo">Demo</a><a href="javascript:void(0)">Pricing</a><a href="javascript:void(0)">API Access</a>
+      </div>
+      <div class="footer-col">
+        <span class="label" style="color:var(--muted);margin-bottom:4px">Legal</span>
+        <a href="#privacy">Privacy Policy</a><a href="javascript:void(0)">Terms of Service</a><a href="javascript:void(0)">Security</a>
+      </div>
+      <div class="footer-col">
+        <span class="label" style="color:var(--muted);margin-bottom:4px">Connect</span>
+        <a href="javascript:void(0)">Twitter / X</a><a href="javascript:void(0)">Instagram</a><a href="javascript:void(0)">Support</a>
+      </div>
+    </div>
+  </footer>
+  <div class="footer-btm"><span>© 2025 FitCheck AI. All rights reserved.</span><span>Designed for the future of fashion.</span></div>
+
+</div><!-- /landing -->
+
+
+<!-- ═══════════════════ STUDIO ════════════════════ -->
+<div id="screen-studio" class="screen">
+
+  <nav class="s-nav">
+    <div class="row gap3">
+      <button class="ico-btn" onclick="goTo('landing')" title="Back to home"><svg width="15" height="15"><use href="#ic-arrow-l"/></svg></button>
+      <div class="logo" style="font-size:17px;cursor:pointer" onclick="goTo('landing')">
+        <svg width="21" height="21"><use href="#ic-hanger" stroke="#0ea5e9"/></svg>FitCheck AI
+      </div>
+    </div>
+    <ul class="s-links">
+      <li class="act">Studio</li><li>Gallery</li><li>History</li><li>Trends</li>
+    </ul>
+    <div class="row gap2">
+      <button class="ico-btn" title="Notifications"><svg width="15" height="15"><use href="#ic-bell"/></svg></button>
+      <button class="av-btn" onclick="openLogin()" title="Account">U</button>
+    </div>
+  </nav>
+
+  <div class="studio-body">
+    <div class="between" style="margin-bottom:18px">
+      <div>
+        <h1 style="font-size:26px;font-weight:900;color:#fff">Try-On Studio</h1>
+        <div class="row gap2" style="margin-top:4px">
+          <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pglow 2s infinite;display:inline-block"></span>
+          <span style="font-size:13px;color:var(--muted)">Ready to fit…</span>
+        </div>
+      </div>
+      <button class="btn btn-ghost sm" style="gap:6px"><svg width="13" height="13"><use href="#ic-hist"/></svg>Recent Looks</button>
+      <span id="tries-badge" style="font-size:12px;font-weight:600;color:var(--muted);padding:5px 12px;background:var(--bg);border:1px solid var(--bdr);border-radius:999px"></span>
+      <span id="credit-badge" onclick="openTopUp()" title="Click to buy more credits" style="font-size:12px;font-weight:600;color:#f97316;padding:5px 12px;background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:999px;cursor:pointer;display:none">⚡ 0 credits</span>
+    </div>
+
+    <div class="studio-grid">
+
+      <!-- Inputs -->
+      <div class="studio-col">
+
+        <!-- Step 1 -->
+        <div class="in-card">
+          <div class="in-hdr">
+            <div class="in-ico ico-b"><svg width="14" height="14"><use href="#ic-person" stroke="#0ea5e9"/></svg></div>
+            <span style="font-weight:700;color:#fff;font-size:14px">Step 1: Your Photo</span>
+          </div>
+          <div class="upzone" id="upzone" onclick="document.getElementById('file-in').click()" role="button" tabindex="0" aria-label="Upload your photo" onkeydown="if(event.key==='Enter'||event.key===' ')this.click()">
+            <div class="up-ico def" id="up-ico"><svg width="21" height="21"><use href="#ic-upload" stroke="#0ea5e9"/></svg></div>
+            <div>
+              <p style="font-weight:600;color:#fff;font-size:14px" id="up-label">Upload Base Photo</p>
+              <p style="font-size:12px;color:var(--faint);margin-top:3px">Full body or upper body shot for best results</p>
+            </div>
+            <button class="btn btn-ghost sm" style="pointer-events:none">Browse Files</button>
+            <input type="file" id="file-in" style="display:none" accept="image/*" onchange="handleUpload(this)"/>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="in-card">
+          <div class="in-hdr">
+            <div class="in-ico ico-o"><svg width="14" height="14"><use href="#ic-bag" stroke="#f97316"/></svg></div>
+            <span style="font-weight:700;color:#fff;font-size:14px">Step 2: Product Details</span>
+          </div>
+          <div class="col gap3">
+            <div class="field">
+              <label>Product Image or URL</label>
+              <div class="fit-in-w">
+                <input type="url" class="fit-in" id="prod-url" placeholder="Paste Amazon, Zara, or image link…" style="padding-right:36px"/>
+                <span class="ixr"><svg width="16" height="16"><use href="#ic-link" stroke="#475569"/></svg></span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Product Type</label>
+              <select class="fit-in">
+                <option>Clothing</option><option>Watch</option><option>Jewellery</option>
+                <option>Glasses / Eyewear</option><option>Shoes</option><option>Hat / Cap</option><option>Bag / Accessory</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="in-card">
+          <div class="in-hdr">
+            <div class="in-ico ico-p"><svg width="14" height="14"><use href="#ic-ruler" stroke="#a78bfa"/></svg></div>
+            <span style="font-weight:700;color:#fff;font-size:14px">Step 3: Body Measurements</span>
+          </div>
+          <div class="g2">
+            <div class="field">
+              <label>Height</label>
+              <div class="fit-in-w"><input type="number" class="fit-in" value="175" min="100" max="250" style="padding-right:36px"/><span class="sfx">CM</span></div>
+            </div>
+            <div class="field">
+              <label>Weight</label>
+              <div class="fit-in-w"><input type="number" class="fit-in" value="70" min="30" max="250" style="padding-right:36px"/><span class="sfx">KG</span></div>
+            </div>
+            <div class="field"><label>Age</label><input type="number" class="fit-in" value="25" min="10" max="100"/></div>
+            <div class="field">
+              <label>Body Type</label>
+              <select class="fit-in"><option>Regular</option><option>Athletic</option><option>Slim</option><option>Plus Size</option><option>Petite</option></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Free (HuggingFace — ₹0 to you) -->
+        <button class="gen-btn" id="btn-free" onclick="generate(false)" style="background:linear-gradient(135deg,var(--purple),var(--brand))">
+          <svg width="17" height="17"><use href="#ic-star" stroke="white"/></svg>
+          Generate Free (3/day)
+        </button>
+        <!-- Paid credit path (Replicate — appears only when user has credits) -->
+        <div id="credit-tryon-row" style="display:none;margin-top:8px">
+          <button id="btn-credit" onclick="generate(true)" style="width:100%;padding:15px 24px;font-size:16px;font-weight:700;color:#fff;border:none;border-radius:14px;background:linear-gradient(135deg,#f97316,#7c3aed);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .2s">
+            <svg width="17" height="17"><use href="#ic-star" stroke="white"/></svg>
+            <span id="btn-credit-label">Use 1 Credit (Priority AI)</span>
+          </button>
+        </div>
+        <!-- Always visible top-up nudge -->
+        <button onclick="openTopUp()" style="width:100%;margin-top:8px;padding:9px;font-size:13px;font-weight:600;color:var(--faint);background:none;border:1px dashed var(--bdr);border-radius:12px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='#f97316';this.style.color='#f97316'" onmouseout="this.style.borderColor='var(--bdr)';this.style.color='var(--faint)'">
+          ⚡ Buy Credits for Priority Rendering →
+        </button>
+      </div>
+
+      <!-- Preview -->
+      <div class="col gap4">
+        <div class="card" style="padding:15px">
+          <div class="between" style="margin-bottom:13px;flex-wrap:wrap;gap:8px">
+            <div class="tab-bar">
+              <button class="tab-btn act" onclick="setTab(this,'front')">Front</button>
+              <button class="tab-btn" onclick="setTab(this,'side')">Side</button>
+              <button class="tab-btn" onclick="setTab(this,'three-quarter')">3/4</button>
+              <button class="tab-btn" onclick="setTab(this,'back')">Back</button>
+            </div>
+            <div class="row gap2">
+              <button class="ico-btn" title="Zoom in"><svg width="14" height="14"><use href="#ic-zoom"/></svg></button>
+              <button class="ico-btn" title="Fullscreen"><svg width="14" height="14"><use href="#ic-expand"/></svg></button>
+            </div>
+          </div>
+
+          <div class="render" id="render" style="min-height:520px;align-items:stretch;padding:0">
+            <!-- Generating overlay -->
+            <div class="gen-ov" id="gen-ov" style="border-radius:10px">
+              <div class="spinner"></div>
+              <div style="text-align:center">
+                <p style="font-weight:600;color:#fff;font-size:14px" id="gen-status">Analysing body shape…</p>
+                <p style="font-size:11px;color:var(--muted);margin-top:3px">AI Render V4.2</p>
+              </div>
+              <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-st" id="empty-st" style="width:100%">
+              <div style="width:56px;height:56px;border-radius:17px;background:var(--surf-hi);display:flex;align-items:center;justify-content:center">
+                <svg width="24" height="24"><use href="#ic-img" stroke="#475569"/></svg>
+              </div>
+              <p style="color:var(--muted);font-size:14px;font-weight:500">Preview will appear here</p>
+              <p style="color:var(--faint);font-size:12px">Fill in all 3 steps then hit Generate</p>
+            </div>
+
+            <!-- Result: realistic before/after transformation -->
+            <div class="result-st" id="result-st" style="width:100%;padding:12px;flex-direction:column;gap:10px">
+              <!-- View label -->
+              <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+                <span style="font-size:11px;font-weight:700;color:#0ea5e9;letter-spacing:.07em;text-transform:uppercase" id="res-view">Front View</span>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block"></span>
+                  <span style="font-size:11px;color:#22c55e;font-weight:600">AI Rendered</span>
+                </div>
+              </div>
+
+              <!-- Two panels: before + after -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;flex:1">
+
+                <!-- BEFORE -->
+                <div style="position:relative;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#141e30,#0f1829);border:1px solid var(--bdr)">
+                  <div style="position:absolute;top:8px;left:8px;z-index:5;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.1em;background:rgba(71,85,105,.7);color:#94a3b8;border:1px solid var(--bdr)">BEFORE</div>
+                  <svg viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+                    <defs>
+                      <radialGradient id="sG" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#f5c9a0"/><stop offset="100%" stop-color="#e0a070"/></radialGradient>
+                      <radialGradient id="hG" cx="50%" cy="20%" r="70%"><stop offset="0%" stop-color="#3d2408"/><stop offset="100%" stop-color="#1a0e04"/></radialGradient>
+                      <linearGradient id="tG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#b0b8c8"/><stop offset="100%" stop-color="#8a9ab0"/></linearGradient>
+                      <linearGradient id="jG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#3a5080"/><stop offset="100%" stop-color="#22305a"/></linearGradient>
+                      <linearGradient id="snG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ddd"/><stop offset="100%" stop-color="#aaa"/></linearGradient>
+                    </defs>
+                    <ellipse cx="100" cy="415" rx="50" ry="7" fill="rgba(0,0,0,0.18)"/>
+                    <ellipse cx="100" cy="54" rx="38" ry="42" fill="url(#hG)"/>
+                    <ellipse cx="100" cy="66" rx="34" ry="38" fill="url(#sG)"/>
+                    <path d="M66 50 Q72 28 100 26 Q128 28 134 50 Q128 38 100 36 Q72 38 66 50Z" fill="url(#hG)"/>
+                    <ellipse cx="67" cy="70" rx="6" ry="9" fill="#e0a070"/>
+                    <ellipse cx="133" cy="70" rx="6" ry="9" fill="#e0a070"/>
+                    <rect x="88" y="100" width="24" height="24" rx="6" fill="#e8b080"/>
+                    <ellipse cx="87" cy="64" rx="6" ry="7" fill="#fff"/><ellipse cx="113" cy="64" rx="6" ry="7" fill="#fff"/>
+                    <ellipse cx="88" cy="65" rx="3.5" ry="4" fill="#3d2408"/><ellipse cx="114" cy="65" rx="3.5" ry="4" fill="#3d2408"/>
+                    <circle cx="89" cy="64" r="1.2" fill="#fff"/><circle cx="115" cy="64" r="1.2" fill="#fff"/>
+                    <path d="M80 55 Q87 51 95 54" stroke="#3d2408" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M105 54 Q113 51 120 55" stroke="#3d2408" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M99 70 Q96 80 98 84 Q100 86 102 84 Q104 80 101 70" fill="none" stroke="#c88060" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M91 93 Q100 89 109 93" fill="#e07060"/>
+                    <path d="M89 93 Q100 99 111 93" stroke="#c06050" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M60 124 Q52 128 40 160 Q36 175 38 240 Q38 248 100 250 Q162 248 162 240 Q164 175 160 160 Q148 128 140 124 Q126 118 100 116 Q74 118 60 124Z" fill="url(#tG)"/>
+                    <path d="M84 116 Q100 126 116 116 Q108 110 100 110 Q92 110 84 116Z" fill="#a0aabb"/>
+                    <path d="M60 124 Q44 126 34 148 Q28 162 34 170 Q44 176 54 168 Q56 156 62 144 Q64 136 66 128Z" fill="url(#tG)"/>
+                    <path d="M140 124 Q156 126 166 148 Q172 162 166 170 Q156 176 146 168 Q144 156 138 144 Q136 136 134 128Z" fill="url(#tG)"/>
+                    <path d="M34 168 Q28 178 32 192 Q36 196 42 194 Q48 180 54 168Z" fill="url(#sG)"/>
+                    <path d="M166 168 Q172 178 168 192 Q164 196 158 194 Q152 180 146 168Z" fill="url(#sG)"/>
+                    <path d="M40 246 Q38 280 36 340 Q34 370 38 400 Q46 410 62 408 Q72 408 76 396 Q82 356 84 310 Q86 280 88 250Z" fill="url(#jG)"/>
+                    <path d="M160 246 Q162 280 164 340 Q166 370 162 400 Q154 410 138 408 Q128 408 124 396 Q118 356 116 310 Q114 280 112 250Z" fill="url(#jG)"/>
+                    <path d="M88 250 Q94 290 100 340 Q106 290 112 250" fill="#2e4070" stroke="#1e305a" stroke-width="1"/>
+                    <rect x="40" y="244" width="120" height="10" rx="3" fill="#2a1e10"/>
+                    <rect x="93" y="243" width="14" height="12" rx="2" fill="#c8a840"/>
+                    <path d="M36 398 Q28 402 26 410 Q28 418 50 418 Q68 418 72 410 Q70 400 62 398Z" fill="url(#snG)" stroke="#ccc" stroke-width="1"/>
+                    <path d="M164 398 Q172 402 174 410 Q172 418 150 418 Q132 418 128 410 Q130 400 138 398Z" fill="url(#snG)" stroke="#ccc" stroke-width="1"/>
+                  </svg>
+                </div>
+
+                <!-- AFTER (fitted look) -->
+                <div style="position:relative;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#0e1a2e,#0a1320);border:1px solid rgba(14,165,233,0.4);box-shadow:0 0 24px rgba(14,165,233,0.1)">
+                  <div style="position:absolute;top:8px;left:8px;z-index:5;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.1em;background:rgba(14,165,233,.15);color:#0ea5e9;border:1px solid rgba(14,165,233,.3);display:flex;align-items:center;gap:4px">
+                    <span style="width:5px;height:5px;border-radius:50%;background:#0ea5e9;animation:pglow 1.5s infinite;display:inline-block"></span>AI FIT
+                  </div>
+                  <svg viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block" id="result-svg">
+                    <defs>
+                      <radialGradient id="sG2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#f5c9a0"/><stop offset="100%" stop-color="#e0a070"/></radialGradient>
+                      <radialGradient id="hG2" cx="50%" cy="20%" r="70%"><stop offset="0%" stop-color="#3d2408"/><stop offset="100%" stop-color="#1a0e04"/></radialGradient>
+                      <linearGradient id="jkLG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2c1a2e"/><stop offset="50%" stop-color="#1e1220"/><stop offset="100%" stop-color="#130c16"/></linearGradient>
+                      <linearGradient id="jkHL" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(120,80,140,0.4)"/><stop offset="100%" stop-color="rgba(40,20,60,0.2)"/></linearGradient>
+                      <linearGradient id="inLG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#8b3a3a"/><stop offset="100%" stop-color="#6b2020"/></linearGradient>
+                      <linearGradient id="jG2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#3a5080"/><stop offset="100%" stop-color="#22305a"/></linearGradient>
+                      <linearGradient id="bsLG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#222"/><stop offset="100%" stop-color="#111"/></linearGradient>
+                      <filter id="gF"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                    </defs>
+                    <!-- Aura glow -->
+                    <ellipse cx="100" cy="220" rx="85" ry="210" fill="rgba(14,165,233,0.04)"/>
+                    <ellipse cx="100" cy="415" rx="54" ry="8" fill="rgba(0,0,0,0.28)"/>
+                    <!-- Hair & head — identical face -->
+                    <ellipse cx="100" cy="54" rx="38" ry="42" fill="url(#hG2)"/>
+                    <ellipse cx="100" cy="66" rx="34" ry="38" fill="url(#sG2)"/>
+                    <path d="M66 50 Q72 28 100 26 Q128 28 134 50 Q128 38 100 36 Q72 38 66 50Z" fill="url(#hG2)"/>
+                    <ellipse cx="67" cy="70" rx="6" ry="9" fill="#e0a070"/>
+                    <ellipse cx="133" cy="70" rx="6" ry="9" fill="#e0a070"/>
+                    <rect x="88" y="100" width="24" height="24" rx="6" fill="#e8b080"/>
+                    <ellipse cx="87" cy="64" rx="6" ry="7" fill="#fff"/><ellipse cx="113" cy="64" rx="6" ry="7" fill="#fff"/>
+                    <ellipse cx="88" cy="65" rx="3.5" ry="4" fill="#3d2408"/><ellipse cx="114" cy="65" rx="3.5" ry="4" fill="#3d2408"/>
+                    <circle cx="89" cy="64" r="1.2" fill="#fff"/><circle cx="115" cy="64" r="1.2" fill="#fff"/>
+                    <path d="M80 55 Q87 51 95 54" stroke="#3d2408" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M105 54 Q113 51 120 55" stroke="#3d2408" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M99 70 Q96 80 98 84 Q100 86 102 84 Q104 80 101 70" fill="none" stroke="#c88060" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M91 93 Q100 89 109 93" fill="#e07060"/>
+                    <path d="M89 93 Q100 99 111 93" stroke="#c06050" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <!-- Jacket body -->
+                    <path d="M56 122 Q44 128 34 158 Q28 178 30 248 Q30 256 100 258 Q170 256 170 248 Q172 178 166 158 Q156 128 144 122 Q126 114 100 112 Q74 114 56 122Z" fill="url(#jkLG)"/>
+                    <path d="M56 122 Q44 128 34 158 Q28 178 30 248 Q30 256 100 258 Q170 256 170 248 Q172 178 166 158 Q156 128 144 122 Q126 114 100 112 Q74 114 56 122Z" fill="url(#jkHL)"/>
+                    <!-- Lapels / lining -->
+                    <path d="M88 112 Q86 132 80 155 Q90 150 100 150 Q110 150 120 155 Q114 132 112 112 Q106 118 100 122 Q94 118 88 112Z" fill="url(#inLG)"/>
+                    <path d="M88 112 Q84 130 82 152 Q86 148 92 148 Q94 140 94 130 Q94 120 88 112Z" fill="url(#jkLG)" stroke="#3a2040" stroke-width="0.5"/>
+                    <path d="M112 112 Q116 130 118 152 Q114 148 108 148 Q106 140 106 130 Q106 120 112 112Z" fill="url(#jkLG)" stroke="#3a2040" stroke-width="0.5"/>
+                    <line x1="100" y1="152" x2="100" y2="256" stroke="#3a2040" stroke-width="1" opacity="0.6"/>
+                    <circle cx="100" cy="168" r="3" fill="#1a0e1e" stroke="#5a3a6a" stroke-width="0.8"/>
+                    <circle cx="100" cy="190" r="3" fill="#1a0e1e" stroke="#5a3a6a" stroke-width="0.8"/>
+                    <circle cx="100" cy="212" r="3" fill="#1a0e1e" stroke="#5a3a6a" stroke-width="0.8"/>
+                    <!-- Pockets -->
+                    <path d="M48 200 Q46 208 48 218 Q58 222 68 218 Q70 208 68 200 Q58 196 48 200Z" fill="none" stroke="#3a2040" stroke-width="1.2"/>
+                    <path d="M48 200 Q58 197 68 200" stroke="#3a2040" stroke-width="1.5" fill="none"/>
+                    <path d="M152 200 Q150 208 152 218 Q142 222 132 218 Q130 208 132 200 Q142 196 152 200Z" fill="none" stroke="#3a2040" stroke-width="1.2"/>
+                    <path d="M152 200 Q142 197 132 200" stroke="#3a2040" stroke-width="1.5" fill="none"/>
+                    <!-- Sleeves -->
+                    <path d="M56 122 Q38 128 28 154 Q20 174 24 196 Q30 208 42 206 Q54 200 58 186 Q60 164 66 142Z" fill="url(#jkLG)"/>
+                    <path d="M56 122 Q38 128 28 154 Q20 174 24 196 Q30 208 42 206 Q54 200 58 186 Q60 164 66 142Z" fill="url(#jkHL)"/>
+                    <path d="M144 122 Q162 128 172 154 Q180 174 176 196 Q170 208 158 206 Q146 200 142 186 Q140 164 134 142Z" fill="url(#jkLG)"/>
+                    <path d="M144 122 Q162 128 172 154 Q180 174 176 196 Q170 208 158 206 Q146 200 142 186 Q140 164 134 142Z" fill="url(#jkHL)"/>
+                    <!-- Cuffs -->
+                    <path d="M24 192 Q32 208 42 206 Q54 200 58 188 Q48 192 36 190Z" fill="#1a0a1e" stroke="#3a2040" stroke-width="0.8"/>
+                    <path d="M176 192 Q168 208 158 206 Q146 200 142 188 Q152 192 164 190Z" fill="#1a0a1e" stroke="#3a2040" stroke-width="0.8"/>
+                    <!-- Hands -->
+                    <path d="M24 196 Q18 204 22 214 Q28 218 36 216 Q42 208 42 200Z" fill="url(#sG2)"/>
+                    <path d="M176 196 Q182 204 178 214 Q172 218 164 216 Q158 208 158 200Z" fill="url(#sG2)"/>
+                    <!-- Sheen -->
+                    <path d="M60 140 Q58 180 60 220" stroke="rgba(140,80,160,0.25)" stroke-width="8" fill="none" stroke-linecap="round"/>
+                    <!-- Jeans -->
+                    <path d="M32 252 Q30 286 28 348 Q26 378 30 406 Q38 416 56 414 Q68 414 72 402 Q78 362 80 316 Q82 286 84 256Z" fill="url(#jG2)"/>
+                    <path d="M168 252 Q170 286 172 348 Q174 378 170 406 Q162 416 144 414 Q132 414 128 402 Q122 362 116 316 Q114 286 116 256Z" fill="url(#jG2)"/>
+                    <path d="M84 256 Q90 296 100 348 Q110 296 116 256" fill="#2e4070" stroke="#1e305a" stroke-width="1"/>
+                    <rect x="32" y="250" width="136" height="10" rx="3" fill="#0f0a06"/>
+                    <rect x="93" y="249" width="14" height="12" rx="2" fill="#b89820"/>
+                    <!-- Chelsea boots -->
+                    <path d="M28 404 Q18 410 16 418 Q20 426 48 426 Q68 426 72 416 Q70 406 58 404Z" fill="url(#bsLG)" stroke="#333" stroke-width="0.5"/>
+                    <path d="M172 404 Q182 410 184 418 Q180 426 152 426 Q132 426 128 416 Q130 406 142 404Z" fill="url(#bsLG)" stroke="#333" stroke-width="0.5"/>
+                    <path d="M24 408 Q30 406 36 408" stroke="#555" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M176 408 Q170 406 164 408" stroke="#555" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M22 412 Q32 408 42 412" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M178 412 Q168 408 158 412" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <!-- AI scan animation -->
+                    <line x1="10" y1="100" x2="190" y2="100" stroke="#0ea5e9" stroke-width="0.8" stroke-dasharray="6 4" opacity="0">
+                      <animate attributeName="y1" values="30;390;30" dur="2.8s" repeatCount="indefinite"/>
+                      <animate attributeName="y2" values="30;390;30" dur="2.8s" repeatCount="indefinite"/>
+                      <animate attributeName="opacity" values="0;0.5;0" dur="2.8s" repeatCount="indefinite"/>
+                    </line>
+                    <!-- Corner brackets -->
+                    <path d="M10 30 L10 14 L26 14" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M190 30 L190 14 L174 14" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M10 390 L10 406 L26 406" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M190 390 L190 406 L174 406" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+                    <!-- Fit dots -->
+                    <circle cx="100" cy="155" r="3.5" fill="#0ea5e9" opacity="0.85" filter="url(#gF)"/>
+                    <circle cx="60" cy="180" r="2.5" fill="#0ea5e9" opacity="0.7" filter="url(#gF)"/>
+                    <circle cx="140" cy="180" r="2.5" fill="#0ea5e9" opacity="0.7" filter="url(#gF)"/>
+                    <circle cx="100" cy="220" r="2.5" fill="#0ea5e9" opacity="0.6" filter="url(#gF)"/>
+                  </svg>
+                  <!-- Fit score chip -->
+                  <div style="position:absolute;bottom:8px;left:8px;right:8px;background:rgba(11,17,32,0.94);border:1px solid rgba(14,165,233,0.3);border-radius:9px;padding:7px 10px;backdrop-filter:blur(8px)">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                      <span style="font-size:9px;font-weight:700;color:#0ea5e9;letter-spacing:.06em">FIT SCORE</span>
+                      <span style="font-size:13px;font-weight:900;color:#22c55e">98%</span>
+                    </div>
+                    <div style="height:3px;background:var(--bdr);border-radius:99px;overflow:hidden;margin-bottom:5px">
+                      <div style="width:98%;height:100%;background:linear-gradient(90deg,#0ea5e9,#22c55e);border-radius:99px"></div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between">
+                      <span style="font-size:9px;color:var(--muted)">Size M · True to fit</span>
+                      <span style="font-size:9px;color:#22c55e;font-weight:700">✓ Perfect</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result bar -->
+          <div class="res-bar" id="res-bar">
+            <div class="res-meta">
+              <span style="color:#22c55e;display:flex;align-items:center;gap:3px;font-size:12px"><svg width="11" height="11"><use href="#ic-check" stroke="#22c55e"/></svg>Fit Score: 98% · Size M</span>
+              <span style="color:var(--brand);display:flex;align-items:center;gap:3px;font-size:12px"><svg width="11" height="11"><use href="#ic-ruler" stroke="#0ea5e9"/></svg>True to fit · Premium Dark Blazer</span>
+            </div>
+            <div class="row gap2">
+              <button class="btn btn-ghost sm" style="gap:5px"><svg width="13" height="13"><use href="#ic-dl"/></svg>Download</button>
+              <button class="btn btn-orange sm" onclick="openLogin()" style="gap:5px"><svg width="13" height="13"><use href="#ic-lock" stroke="white"/></svg>Save Look</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI suggestion -->
+        <div class="ai-sug" id="ai-sug">
+          <div class="row gap3">
+            <div class="ai-ico">✦</div>
+            <div>
+              <p style="font-size:13px;font-weight:700;color:#fff">AI Stylist Suggestion</p>
+              <p style="font-size:12px;color:var(--muted);margin-top:2px">This fit would pair perfectly with a minimalist silver watch.</p>
+            </div>
+          </div>
+          <button style="color:#f97316;font-size:12px;font-weight:700;background:none;border:none;cursor:pointer;white-space:nowrap" onmouseover="this.style.color='#fb923c'" onmouseout="this.style.color='#f97316'">Add Accessories</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+          <div class="stat"><div class="sv">99%</div><div class="sl">Body Accuracy</div></div>
+          <div class="stat"><div class="sv">&lt;3s</div><div class="sl">Render Time</div></div>
+          <div class="stat"><div class="sv">4</div><div class="sl">View Angles</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- /studio -->
+
+
+<!-- ═══════════════════ LOGIN MODAL ═══════════════ -->
+<div class="m-ov" id="m-ov" onclick="handleMClose(event)">
+  <div class="modal">
+    <button class="m-close" onclick="closeLogin()" aria-label="Close modal">✕</button>
+    <div class="m-top">
+      <div class="m-glow"></div>
+      <span style="font-size:68px;position:relative;z-index:1;line-height:1">🧘‍♀️</span>
+    </div>
+    <div class="m-body">
+      <div class="m-brand">🧥</div>
+      <h2 style="font-size:21px;font-weight:800;color:#fff;margin-bottom:8px">Save your try-ons</h2>
+      <p style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:22px">Access your virtual fits anytime, anywhere. Create an account to keep your style history and AI preferences.</p>
+      <div class="col gap3">
+        <button class="btn btn-dkout" style="width:100%;padding:12px 18px;justify-content:center;gap:10px" onclick="doLogin()">
+          <svg width="17" height="17" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+        <button class="btn btn-orange" style="width:100%;padding:12px 18px;justify-content:center;gap:8px" onclick="doLogin()">
+          <svg width="15" height="15"><use href="#ic-mail" stroke="white"/></svg>
+          Continue with Email
+        </button>
+      </div>
+    </div>
+    <div class="m-foot">
+      <p style="font-size:11px;color:var(--faint);margin-bottom:13px">By continuing, you agree to our <span style="color:#f97316;cursor:pointer">Terms of Service</span></p>
+      <button onclick="closeLogin()" style="font-size:14px;color:var(--muted);cursor:pointer;background:none;border:none;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">Maybe later</button>
+    </div>
+    <div class="m-bar"></div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════
+   STATE & CONSTANTS
+════════════════════════════════════════════ */
+var MAX_FREE = 3;
+var STORAGE_KEY_TRIES   = 'fitcheck_tries';
+var STORAGE_KEY_DATE    = 'fitcheck_date';
+var STORAGE_KEY_TERMS   = 'fitcheck_terms';
+var STORAGE_KEY_LOGGED  = 'fitcheck_logged';
+var captchaPassed = false;
+var pendingGenerate = false;
+
+function getTries(){
+  var today = new Date().toDateString();
+  var d = localStorage.getItem(STORAGE_KEY_DATE);
+  if(d !== today){ localStorage.setItem(STORAGE_KEY_DATE,today); localStorage.setItem(STORAGE_KEY_TRIES,'0'); }
+  return parseInt(localStorage.getItem(STORAGE_KEY_TRIES)||'0');
+}
+function addTry(){ localStorage.setItem(STORAGE_KEY_TRIES, getTries()+1); updateTriesBadge(); }
+function isLoggedIn(){ return localStorage.getItem(STORAGE_KEY_LOGGED)==='1'; }
+function setLoggedIn(){ localStorage.setItem(STORAGE_KEY_LOGGED,'1'); updateTriesBadge(); }
+function hasAcceptedTerms(){ return localStorage.getItem(STORAGE_KEY_TERMS)==='1'; }
+function acceptTerms(){ localStorage.setItem(STORAGE_KEY_TERMS,'1'); }
+
+function updateTriesBadge(){
+  var b = document.getElementById('tries-badge');
+  if(!b) return;
+  if(isLoggedIn()){ b.textContent='∞ tries (logged in)'; b.style.color='#22c55e'; return; }
+  var left = Math.max(0, MAX_FREE - getTries());
+  b.textContent = left + ' free ' + (left===1?'try':'tries') + ' left today';
+  b.style.color = left===0 ? '#f87171' : left===1 ? '#fb923c' : '#94a3b8';
+}
+
+/* ════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════ */
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var el = document.getElementById('screen-'+id);
+  if(el){ el.classList.add('active'); window.scrollTo(0,0); }
+  if(id==='studio'){ updateTriesBadge(); }
+}
+
+/* ════════════════════════════════════════════
+   MODAL HELPERS
+════════════════════════════════════════════ */
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function closeAllModals(){
+  ['m-ov','terms-ov','captcha-ov','limit-ov'].forEach(function(id){ closeModal(id); });
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeAllModals(); });
+
+/* login */
+function openLogin(){ openModal('m-ov'); }
+function closeLogin(){ closeModal('m-ov'); }
+function handleMClose(e){ if(e.target===document.getElementById('m-ov')) closeLogin(); }
+function doLogin(){
+  setLoggedIn();
+  closeAllModals();
+  showToast('✓ Logged in! Welcome back.','#22c55e');
+  goTo('dashboard');
+  if(pendingGenerate){ pendingGenerate=false; showCaptcha(); }
+}
+
+/* ════════════════════════════════════════════
+   STEP 1 — TERMS & CONDITIONS
+════════════════════════════════════════════ */
+function tryGoToStudio(){
+  if(!hasAcceptedTerms()){ openModal('terms-ov'); return; }
+  goTo('studio');
+}
+function acceptAndContinue(){
+  acceptTerms();
+  closeModal('terms-ov');
+  goTo('studio');
+}
+
+function checkTerms(){
+  var cb = document.getElementById('terms-check');
+  if(!cb.checked){ showToast('⚠️ Please read and check the box to continue.','#1e2d45'); return; }
+  acceptAndContinue();
+}
+
+/* ════════════════════════════════════════════
+   STEP 2 — CAPTCHA
+════════════════════════════════════════════ */
+var captchaAnswer = 0;
+function showCaptcha(){
+  var a = Math.floor(Math.random()*9)+1;
+  var b = Math.floor(Math.random()*9)+1;
+  captchaAnswer = a + b;
+  document.getElementById('captcha-question').textContent = 'What is ' + a + ' + ' + b + ' ?';
+  document.getElementById('captcha-input').value = '';
+  document.getElementById('captcha-err').style.display = 'none';
+  openModal('captcha-ov');
+}
+function verifyCaptcha(){
+  var val = parseInt(document.getElementById('captcha-input').value);
+  if(val !== captchaAnswer){
+    document.getElementById('captcha-err').style.display = 'block';
+    document.getElementById('captcha-input').value='';
+    document.getElementById('captcha-input').focus();
+    /* regenerate question */
+    var a=Math.floor(Math.random()*9)+1, b=Math.floor(Math.random()*9)+1;
+    captchaAnswer=a+b;
+    document.getElementById('captcha-question').textContent='What is '+a+' + '+b+' ?';
+    return;
+  }
+  captchaPassed = true;
+  closeModal('captcha-ov');
+  runGenerate();
+}
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('captcha-ov').classList.contains('open') && e.key==='Enter') verifyCaptcha();
+});
+
+/* ════════════════════════════════════════════
+   STEP 3 — RATE LIMIT
+════════════════════════════════════════════ */
+function showLimitModal(){
+  var resetTime = new Date(); resetTime.setHours(24,0,0,0);
+  var hrs = Math.ceil((resetTime-new Date())/3600000);
+  document.getElementById('limit-reset').textContent = 'Resets in ~'+hrs+' hour'+(hrs===1?'':'s');
+  openModal('limit-ov');
+}
+
+/* ════════════════════════════════════════════
+   MAIN GENERATE FLOW
+════════════════════════════════════════════ */
+function generate(){
+  /* 1. Terms check */
+  if(!hasAcceptedTerms()){ openModal('terms-ov'); pendingGenerate=true; return; }
+  /* 2. Rate limit check (skip if logged in) */
+  if(!isLoggedIn() && getTries() >= MAX_FREE){ showLimitModal(); return; }
+  /* 3. CAPTCHA check */
+  if(!captchaPassed){ pendingGenerate=false; showCaptcha(); return; }
+  /* 4. All clear — run */
+  runGenerate();
+}
+
+var msgs=['Analysing body shape…','Detecting pose & proportions…','Mapping fabric texture…','Aligning garment to body…','Rendering lighting & shadows…','Finalising your look…'];
+function runGenerate(){
+  captchaPassed = false;
+  if(!isLoggedIn()) addTry();
+  updateTriesBadge();
+
+  var ov=document.getElementById('gen-ov');
+  var es=document.getElementById('empty-st');
+  var rs=document.getElementById('result-st');
+  var rb=document.getElementById('res-bar');
+  var as=document.getElementById('ai-sug');
+  var st=document.getElementById('gen-status');
+  var pf=document.getElementById('prog-fill');
+
+  es.style.display='none';
+  rs.style.display='none';
+  rb.classList.remove('on'); as.classList.remove('on');
+  ov.classList.add('on');
+  pf.style.transition='none'; pf.style.width='0%';
+
+  var i=0;
+  var id=setInterval(function(){
+    if(i<msgs.length){
+      st.textContent=msgs[i];
+      pf.style.transition='width .44s ease';
+      pf.style.width=Math.round(((i+1)/msgs.length)*100)+'%';
+      i++;
+    } else {
+      clearInterval(id);
+      setTimeout(function(){
+        ov.classList.remove('on');
+        rs.style.display='flex';
+        rb.classList.add('on');
+        as.classList.add('on');
+        if(!isLoggedIn() && getTries()>=MAX_FREE){
+          setTimeout(function(){ showToast('🔒 All free tries used. Login for unlimited access!','#fb923c'); },800);
+        }
+      },380);
+    }
+  },520);
+}
+
+/* ════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════ */
+function showToast(msg, color){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = color||'#1a2540';
+  t.style.color = '#fff';
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3800);
+}
+
+/* ════════════════════════════════════════════
+   SMOOTH SCROLL
+════════════════════════════════════════════ */
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var h=this.getAttribute('href');
+    if(!h||h==='#'||h==='javascript:void(0)')return;
+    var t=document.querySelector(h);
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}
+  });
+});
+
+/* ════════════════════════════════════════════
+   COMPARE SLIDER
+════════════════════════════════════════════ */
+(function(){
+  var wrap=document.getElementById('cmp-wrap');
+  var bef=document.getElementById('cmp-before');
+  var hdl=document.getElementById('cmp-handle');
+  if(!wrap)return;
+  var on=false;
+  function mv(x){
+    var r=wrap.getBoundingClientRect();
+    var p=Math.min(95,Math.max(5,((x-r.left)/r.width)*100));
+    bef.style.width=p+'%'; hdl.style.left=p+'%';
+  }
+  wrap.addEventListener('mousedown',function(e){on=true;mv(e.clientX);});
+  window.addEventListener('mousemove',function(e){if(on)mv(e.clientX);});
+  window.addEventListener('mouseup',function(){on=false;});
+  wrap.addEventListener('touchstart',function(e){on=true;mv(e.touches[0].clientX);},{passive:true});
+  window.addEventListener('touchmove',function(e){if(on)mv(e.touches[0].clientX);},{passive:true});
+  window.addEventListener('touchend',function(){on=false;});
+}());
+
+/* ════════════════════════════════════════════
+   PHOTO UPLOAD
+════════════════════════════════════════════ */
+function handleUpload(inp){
+  if(!inp.files||!inp.files[0])return;
+  var nm=inp.files[0].name;
+  document.getElementById('up-label').textContent='✓ '+nm;
+  var ico=document.getElementById('up-ico');
+  ico.className='up-ico ok';
+  ico.innerHTML='<svg width="21" height="21"><use href="#ic-check" stroke="#22c55e"/></svg>';
+  document.getElementById('upzone').classList.add('done');
+}
+
+/* ════════════════════════════════════════════
+   TABS & CHIPS
+════════════════════════════════════════════ */
+var viewLabels={front:'Front View',side:'Side View','three-quarter':'3/4 View',back:'Back View'};
+function setTab(btn,view){
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('act');});
+  btn.classList.add('act');
+  var lbl=document.getElementById('res-view');
+  if(lbl) lbl.textContent=viewLabels[view]||'Front View';
+}
+var chips=[
+  {icon:'🧥',name:'Premium Dark Blazer'},
+  {icon:'⌚',name:'Minimalist Silver Watch'},
+  {icon:'👓',name:'Aviator Sunglasses'},
+  {icon:'👟',name:'Air Max Sneakers'},
+  {icon:'💍',name:'Diamond Ring'},
+  {icon:'🧢',name:'Vintage Cap'},
+  {icon:'👜',name:'Crossbody Bag'},
+];
+var ci=0;
+setInterval(function(){
+  ci=(ci+1)%chips.length;
+  var ic=document.getElementById('chip-icon');
+  var nm=document.getElementById('chip-name');
+  if(ic&&nm){ic.textContent=chips[ci].icon;nm.textContent=chips[ci].name;}
+},2200);
+
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
+window.addEventListener('load', function(){
+  updateTriesBadge();
+});
+</script>
+
+<!-- ══════════ TERMS & CONDITIONS MODAL ══════════ -->
+<div class="m-ov" id="terms-ov">
+  <div class="modal" style="max-width:420px">
+    <div class="m-top" style="background:linear-gradient(135deg,#0f2240,#0b1120);height:120px">
+      <div class="m-glow" style="background:radial-gradient(circle at 50% 70%,rgba(14,165,233,.3),transparent 70%)"></div>
+      <div style="position:relative;z-index:1;text-align:center">
+        <div style="font-size:38px;margin-bottom:4px">📋</div>
+        <p style="font-size:12px;font-weight:700;color:#0ea5e9;letter-spacing:.08em;text-transform:uppercase">Before You Begin</p>
+      </div>
+    </div>
+    <div class="m-body" style="text-align:left;padding:24px 28px 10px">
+      <h2 style="font-size:19px;font-weight:800;color:#fff;margin-bottom:14px">Terms &amp; Fair Use Policy</h2>
+      <div style="max-height:210px;overflow-y:auto;padding-right:8px" class="terms-scroll">
+        <div class="terms-item">
+          <span class="terms-ico">🔒</span>
+          <div><strong>Privacy</strong> — Your photos are processed locally and deleted immediately after rendering. We never store or share them.</div>
+        </div>
+        <div class="terms-item">
+          <span class="terms-ico">⚖️</span>
+          <div><strong>Fair Use</strong> — Guest users get 3 free try-ons per day. Login for unlimited access. Abuse of free limits is not permitted.</div>
+        </div>
+        <div class="terms-item">
+          <span class="terms-ico">🚫</span>
+          <div><strong>Prohibited</strong> — Do not upload photos of other people without consent. Misuse may result in a permanent ban.</div>
+        </div>
+        <div class="terms-item">
+          <span class="terms-ico">🤖</span>
+          <div><strong>No Bots</strong> — Automated or scripted use of this service is strictly prohibited.</div>
+        </div>
+        <div class="terms-item">
+          <span class="terms-ico">👶</span>
+          <div><strong>Age</strong> — You must be 13 years or older to use FitCheck AI.</div>
+        </div>
+        <div class="terms-item">
+          <span class="terms-ico">💼</span>
+          <div><strong>Commercial Use</strong> — Free tier is for personal use only. Businesses must subscribe to a B2B plan.</div>
+        </div>
+      </div>
+      <label style="display:flex;align-items:flex-start;gap:10px;margin-top:16px;cursor:pointer;font-size:13px;color:var(--muted);line-height:1.5">
+        <input type="checkbox" id="terms-check" style="margin-top:2px;accent-color:#0ea5e9;width:15px;height:15px;flex-shrink:0"/>
+        I have read and agree to the <span style="color:#0ea5e9;margin-left:4px">Terms of Service</span>&nbsp;&amp;&nbsp;<span style="color:#0ea5e9">Fair Use Policy</span>
+      </label>
+    </div>
+    <div class="m-foot" style="padding:16px 28px 24px;display:flex;flex-direction:column;gap:10px">
+      <button onclick="checkTerms()" class="btn btn-primary" style="width:100%;padding:13px;font-size:15px;justify-content:center">
+        Accept &amp; Continue →
+      </button>
+      <button onclick="closeModal('terms-ov')" style="font-size:13px;color:var(--faint);background:none;border:none;cursor:pointer;text-align:center">
+        Not now
+      </button>
+    </div>
+    <div class="m-bar"></div>
+  </div>
+</div>
+
+<!-- ══════════ CAPTCHA MODAL ══════════ -->
+<div class="m-ov" id="captcha-ov">
+  <div class="modal" style="max-width:360px">
+    <div class="m-top" style="background:linear-gradient(135deg,#1a1535,#0b1120);height:110px">
+      <div class="m-glow" style="background:radial-gradient(circle at 50% 70%,rgba(124,58,237,.3),transparent 70%)"></div>
+      <div style="position:relative;z-index:1;text-align:center">
+        <div style="font-size:36px;margin-bottom:4px">🤖</div>
+        <p style="font-size:12px;font-weight:700;color:#a78bfa;letter-spacing:.08em;text-transform:uppercase">Bot Protection</p>
+      </div>
+    </div>
+    <div class="m-body" style="padding:22px 28px 10px;text-align:center">
+      <h2 style="font-size:18px;font-weight:800;color:#fff;margin-bottom:6px">Verify You're Human</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Solve this quick maths problem to continue.</p>
+      <div style="background:var(--bg);border:1px solid var(--bdr);border-radius:14px;padding:20px;margin-bottom:16px">
+        <p style="font-size:28px;font-weight:900;color:#fff;letter-spacing:.05em" id="captcha-question">What is 4 + 7?</p>
+      </div>
+      <input type="number" id="captcha-input" class="fit-in" placeholder="Enter your answer…" style="text-align:center;font-size:18px;font-weight:700;padding:12px" autofocus/>
+      <p id="captcha-err" style="display:none;color:#f87171;font-size:12px;margin-top:8px;font-weight:600">❌ Wrong answer — try again!</p>
+    </div>
+    <div class="m-foot" style="padding:14px 28px 22px;display:flex;flex-direction:column;gap:10px">
+      <button onclick="verifyCaptcha()" class="btn" style="width:100%;padding:13px;font-size:15px;justify-content:center;background:linear-gradient(135deg,#7c3aed,#0ea5e9);color:#fff;border-radius:12px;font-weight:700">
+        Verify &amp; Generate ✓
+      </button>
+      <button onclick="closeModal('captcha-ov')" style="font-size:13px;color:var(--faint);background:none;border:none;cursor:pointer;text-align:center">Cancel</button>
+    </div>
+    <div class="m-bar" style="background:linear-gradient(90deg,#7c3aed,#0ea5e9)"></div>
+  </div>
+</div>
+
+<!-- ══════════ RATE LIMIT MODAL ══════════ -->
+<div class="m-ov" id="limit-ov">
+  <div class="modal" style="max-width:380px">
+    <div class="m-top" style="background:linear-gradient(135deg,#2d1205,#1a0a00);height:120px">
+      <div class="m-glow" style="background:radial-gradient(circle at 50% 70%,rgba(249,115,22,.35),transparent 70%)"></div>
+      <div style="position:relative;z-index:1;text-align:center">
+        <div style="font-size:38px;margin-bottom:4px">⚡</div>
+        <p style="font-size:12px;font-weight:700;color:#fb923c;letter-spacing:.08em;text-transform:uppercase">Daily Limit Reached</p>
+      </div>
+    </div>
+    <div class="m-body" style="text-align:center;padding:22px 28px 10px">
+      <h2 style="font-size:19px;font-weight:800;color:#fff;margin-bottom:8px">You've used all 3 free try-ons</h2>
+      <p style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:6px">Login or create a free account to get <strong style="color:#fff">unlimited try-ons</strong> every day.</p>
+      <p id="limit-reset" style="font-size:12px;color:var(--faint);margin-bottom:20px">Resets in ~8 hours</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;text-align:left">
+          <span style="font-size:20px">♾️</span>
+          <div><p style="font-size:13px;font-weight:700;color:#fff">Unlimited try-ons daily</p><p style="font-size:11px;color:var(--muted)">After login</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;text-align:left">
+          <span style="font-size:20px">💾</span>
+          <div><p style="font-size:13px;font-weight:700;color:#fff">Save &amp; share your looks</p><p style="font-size:11px;color:var(--muted)">Build your style history</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;text-align:left">
+          <span style="font-size:20px">🤖</span>
+          <div><p style="font-size:13px;font-weight:700;color:#fff">AI Stylist suggestions</p><p style="font-size:11px;color:var(--muted)">Personalised outfit ideas</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="m-foot" style="padding:14px 28px 22px;display:flex;flex-direction:column;gap:10px">
+      <button onclick="closeModal('limit-ov');openTopUp();" class="btn btn-orange" style="width:100%;padding:13px;font-size:15px;justify-content:center">
+        ⚡ Buy Credits — Continue Now
+      </button>
+      <button onclick="closeModal('limit-ov');openLogin();" class="btn btn-ghost" style="width:100%;padding:11px;font-size:14px;justify-content:center;margin-top:6px">
+        Login for Free Daily Tries
+      </button>
+      <button onclick="closeModal('limit-ov')" style="font-size:13px;color:var(--faint);background:none;border:none;cursor:pointer;text-align:center;margin-top:2px">Maybe tomorrow</button>
+    </div>
+    <div class="m-bar"></div>
+  </div>
+</div>
+
+<!-- ══════════ TOAST ══════════ -->
+<div id="toast" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);z-index:200;padding:12px 22px;border-radius:99px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s;opacity:0;white-space:nowrap;pointer-events:none"></div>
+
+<style>
+#toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+.terms-scroll::-webkit-scrollbar { width:4px; }
+.terms-scroll::-webkit-scrollbar-thumb { background:var(--bdr); border-radius:2px; }
+.terms-item { display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:12px; }
+.terms-ico  { font-size:16px; flex-shrink:0; margin-top:1px; }
+
+/* ── Light mode ── */
+body.light {
+  --bg:#f0f4fa; --surf:#ffffff; --surf-hi:#e8eef8;
+  --bdr:#d1dae8; --text:#1e293b; --muted:#64748b;
+  --faint:#94a3b8; --brand:#0284c7;
+  background:#f0f4fa; color:#1e293b;
+}
+body.light .nav, body.light .s-nav { background:rgba(240,244,250,0.9); }
+body.light .card, body.light .in-card { background:#fff; }
+body.light .hero { background: radial-gradient(ellipse 80% 60% at 65% 40%,rgba(14,165,233,.08) 0%,transparent 70%),#f0f4fa; }
+body.light .fit-in { background:#f8fafc; color:#1e293b; }
+body.light .tab-bar { background:#e8eef8; }
+
+/* ── Pricing cards ── */
+.plan-card { background:var(--surf); border:1px solid var(--bdr); border-radius:20px; padding:32px; display:flex; flex-direction:column; gap:16px; transition:transform .2s,box-shadow .2s; position:relative; }
+.plan-card:hover { transform:translateY(-4px); box-shadow:0 20px 50px rgba(0,0,0,.3); }
+.plan-card.featured { border-color:var(--brand); box-shadow:0 0 30px rgba(14,165,233,.15); }
+.plan-badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--brand); color:#fff; font-size:11px; font-weight:800; padding:4px 14px; border-radius:999px; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; }
+.plan-price { font-size:48px; font-weight:900; color:var(--text); line-height:1; }
+.plan-price span { font-size:16px; font-weight:500; color:var(--muted); }
+.plan-feat { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--muted); }
+.plan-feat svg { flex-shrink:0; }
+.plan-feat.yes { color:var(--text); }
+
+/* ── Dashboard ── */
+.dash-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+.look-card { background:var(--surf); border:1px solid var(--bdr); border-radius:14px; overflow:hidden; cursor:pointer; transition:transform .18s,box-shadow .18s; }
+.look-card:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,.3); }
+.look-thumb { width:100%; aspect-ratio:3/4; background:linear-gradient(135deg,#141e30,#0f1829); display:flex; align-items:center; justify-content:center; font-size:48px; position:relative; overflow:hidden; }
+.look-meta { padding:12px; }
+.stat-big { font-size:32px; font-weight:900; color:var(--brand); }
+.dash-stat { background:var(--surf); border:1px solid var(--bdr); border-radius:14px; padding:20px; }
+
+/* ── Admin table ── */
+.tbl { width:100%; border-collapse:collapse; font-size:13px; }
+.tbl th { text-align:left; padding:10px 14px; color:var(--muted); font-weight:700; font-size:11px; letter-spacing:.07em; text-transform:uppercase; border-bottom:1px solid var(--bdr); }
+.tbl td { padding:12px 14px; border-bottom:1px solid rgba(30,45,69,.5); vertical-align:middle; }
+.tbl tr:hover td { background:var(--surf-hi); }
+.tbl-badge { padding:3px 10px; border-radius:999px; font-size:11px; font-weight:700; }
+.tbl-badge.active  { background:rgba(34,197,94,.15); color:#22c55e; }
+.tbl-badge.pending { background:rgba(249,115,22,.15); color:#f97316; }
+.tbl-badge.banned  { background:rgba(248,113,113,.15); color:#f87171; }
+.tbl-badge.pro     { background:rgba(14,165,233,.15);  color:#0ea5e9; }
+.tbl-badge.free    { background:rgba(148,163,184,.1);  color:#94a3b8; }
+
+/* ── B2B portal ── */
+.b2b-card { background:var(--surf); border:1px solid var(--bdr); border-radius:16px; padding:24px; }
+.api-box  { background:var(--bg); border:1px solid var(--bdr); border-radius:10px; padding:14px 16px; font-family:monospace; font-size:13px; color:#7dd3fc; overflow-x:auto; }
+
+/* ── Progress ring ── */
+.ring-wrap { position:relative; width:80px; height:80px; }
+.ring-wrap svg { transform:rotate(-90deg); }
+.ring-bg  { fill:none; stroke:var(--bdr); stroke-width:6; }
+.ring-fg  { fill:none; stroke:var(--brand); stroke-width:6; stroke-linecap:round; stroke-dasharray:220; stroke-dashoffset:0; transition:stroke-dashoffset 1s ease; }
+.ring-val { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900; color:var(--text); }
+
+/* ── Sidebar nav ── */
+.sidebar { width:220px; background:var(--surf); border-right:1px solid var(--bdr); min-height:calc(100vh - 60px); padding:24px 16px; display:flex; flex-direction:column; gap:4px; flex-shrink:0; }
+.sb-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:600; color:var(--muted); cursor:pointer; transition:background .15s,color .15s; }
+.sb-item:hover { background:var(--surf-hi); color:var(--text); }
+.sb-item.act { background:rgba(14,165,233,.12); color:var(--brand); }
+.sb-item svg { flex-shrink:0; }
+.sb-section { font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); padding:16px 14px 6px; }
+.screen-with-sidebar { display:flex; }
+.sidebar-content { flex:1; overflow-x:hidden; }
+
+/* ── Charts (CSS only) ── */
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:80px; }
+.bar { background:linear-gradient(to top,var(--brand),#38bdf8); border-radius:4px 4px 0 0; flex:1; min-width:0; transition:height .6s ease; }
+.mini-chart { display:flex; align-items:flex-end; gap:3px; height:40px; }
+.mini-bar { background:rgba(14,165,233,.5); border-radius:2px 2px 0 0; flex:1; }
+
+/* ── Upload area (AI) ── */
+.ai-status { background:linear-gradient(135deg,rgba(14,165,233,.08),rgba(124,58,237,.08)); border:1px solid rgba(14,165,233,.2); border-radius:12px; padding:14px 16px; }
+.ai-progress-step { display:flex; align-items:center; gap:10px; padding:6px 0; font-size:13px; }
+.ai-step-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* ── Responsive extras ── */
+@media(max-width:768px){
+  .sidebar { display:none; }
+  .plans-grid { grid-template-columns:1fr!important; }
+  .dash-grid  { grid-template-columns:1fr 1fr!important; }
+}
+</style>
+
+<!-- ═══════════════════════ PRICING SCREEN ═══════════════════════ -->
+<div id="screen-pricing" class="screen">
+  <nav class="nav">
+    <div class="logo" onclick="goTo('landing')" style="cursor:pointer">
+      <svg width="26" height="26"><use href="#ic-hanger" stroke="#0ea5e9"/></svg>FitCheck AI
+    </div>
+    <ul class="nav-links">
+      <li><a href="javascript:void(0)" onclick="goTo('landing')">Home</a></li>
+      <li><a href="javascript:void(0)" onclick="goTo('studio')">Studio</a></li>
+      <li><a href="javascript:void(0)" onclick="goTo('b2b')" >Business</a></li>
+    </ul>
+    <div class="row gap3">
+      <button onclick="toggleTheme()" class="ico-btn" title="Toggle theme" style="background:var(--surf);border:1px solid var(--bdr);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer" id="theme-btn">🌙</button>
+      <button class="nav-login" onclick="openLogin()">Login</button>
+      <button class="btn btn-primary sm glow-b" onclick="tryGoToStudio()">Try Free</button>
+    </div>
+  </nav>
+
+  <section class="sec" style="padding-top:60px">
+    <div class="wrap">
+      <div class="sec-intro">
+        <span class="badge bdg-brand" style="margin-bottom:14px;display:inline-flex">Simple, transparent pricing</span>
+        <h2 class="sec-head" style="margin-bottom:12px">Choose Your Plan</h2>
+        <p class="sec-sub">Start free — upgrade when you're ready. No hidden fees.</p>
+        <!-- Toggle monthly/annual -->
+        <div class="row gap3" style="justify-content:center;margin-top:20px">
+          <span style="font-size:14px;font-weight:600;color:var(--muted)">Monthly</span>
+          <div id="billing-toggle" onclick="toggleBilling()" style="width:48px;height:26px;background:var(--brand);border-radius:999px;position:relative;cursor:pointer;transition:background .2s">
+            <div id="billing-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s"></div>
+          </div>
+          <span style="font-size:14px;font-weight:600;color:var(--text)">Annual <span style="color:#22c55e;font-size:12px">−20%</span></span>
+        </div>
+      </div>
+
+      <div class="plans-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:980px;margin:0 auto">
+
+        <!-- Free -->
+        <div class="plan-card">
+          <div>
+            <p style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Free</p>
+            <div class="plan-price">₹0<span>/mo</span></div>
+            <p style="font-size:13px;color:var(--muted);margin-top:8px">Perfect for trying it out</p>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--bdr)"/>
+          <div class="col gap3">
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>3 try-ons per day</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>Front view only</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>Download result</div>
+            <div class="plan-feat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>No history saved</div>
+            <div class="plan-feat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>No AI styling</div>
+          </div>
+          <button class="btn btn-ghost" style="width:100%;padding:12px;justify-content:center" onclick="tryGoToStudio()">Get Started Free</button>
+        </div>
+
+        <!-- Pro -->
+        <div class="plan-card featured">
+          <div class="plan-badge">Most Popular</div>
+          <div>
+            <p style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);margin-bottom:6px">Pro</p>
+            <div class="plan-price" id="pro-price">₹499<span>/mo</span></div>
+            <p style="font-size:13px;color:var(--muted);margin-top:8px">For serious fashion lovers</p>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--bdr)"/>
+          <div class="col gap3">
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>Unlimited try-ons daily</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>All 4 view angles</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>Save &amp; history</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>AI stylist suggestions</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>Priority rendering</div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;padding:12px;justify-content:center" onclick="openLogin()">Start Pro Plan →</button>
+        </div>
+
+        <!-- Business -->
+        <div class="plan-card">
+          <div>
+            <p style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a78bfa;margin-bottom:6px">Business</p>
+            <div class="plan-price" id="biz-price">₹4,999<span>/mo</span></div>
+            <p style="font-size:13px;color:var(--muted);margin-top:8px">For brands &amp; e-commerce</p>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--bdr)"/>
+          <div class="col gap3">
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>Everything in Pro</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>API access (10k calls/mo)</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>Widget embed</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>Analytics dashboard</div>
+            <div class="plan-feat yes"><svg width="14" height="14"><use href="#ic-check" stroke="#22c55e"/></svg>Dedicated support</div>
+          </div>
+          <button class="btn" style="width:100%;padding:12px;justify-content:center;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border-radius:12px;font-weight:700" onclick="goTo('b2b')">Contact Sales →</button>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div style="max-width:640px;margin:64px auto 0">
+        <h3 style="font-size:22px;font-weight:800;color:var(--text);text-align:center;margin-bottom:28px">Frequently Asked Questions</h3>
+        <div class="col gap3" id="faq-list">
+          <div class="faq-item card" style="padding:18px 20px;cursor:pointer" onclick="toggleFaq(this)">
+            <div class="between"><span style="font-weight:600;font-size:15px">Is the free tier really free forever?</span><span class="faq-arrow" style="font-size:18px;transition:transform .2s">+</span></div>
+            <p class="faq-ans" style="display:none;margin-top:10px;font-size:14px;color:var(--muted);line-height:1.65">Yes — the free tier is free forever. You get 3 try-ons per day with no credit card required. Upgrade only when you need more.</p>
+          </div>
+          <div class="faq-item card" style="padding:18px 20px;cursor:pointer" onclick="toggleFaq(this)">
+            <div class="between"><span style="font-weight:600;font-size:15px">How accurate is the AI try-on?</span><span class="faq-arrow" style="font-size:18px;transition:transform .2s">+</span></div>
+            <p class="faq-ans" style="display:none;margin-top:10px;font-size:14px;color:var(--muted);line-height:1.65">Our AI achieves 98%+ fit accuracy using IDM-VTON, one of the most advanced virtual try-on models available. Results improve with a clear, well-lit full-body photo.</p>
+          </div>
+          <div class="faq-item card" style="padding:18px 20px;cursor:pointer" onclick="toggleFaq(this)">
+            <div class="between"><span style="font-weight:600;font-size:15px">Can I cancel anytime?</span><span class="faq-arrow" style="font-size:18px;transition:transform .2s">+</span></div>
+            <p class="faq-ans" style="display:none;margin-top:10px;font-size:14px;color:var(--muted);line-height:1.65">Absolutely. Cancel anytime from your dashboard — no questions asked, no cancellation fee. Your data is deleted within 30 days of cancellation.</p>
+          </div>
+          <div class="faq-item card" style="padding:18px 20px;cursor:pointer" onclick="toggleFaq(this)">
+            <div class="between"><span style="font-weight:600;font-size:15px">Does it work for all body types?</span><span class="faq-arrow" style="font-size:18px;transition:transform .2s">+</span></div>
+            <p class="faq-ans" style="display:none;margin-top:10px;font-size:14px;color:var(--muted);line-height:1.65">Yes. FitCheck AI is trained on diverse body types including slim, regular, athletic, plus-size and petite. Simply enter your body measurements for best results.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════ USER DASHBOARD ═══════════════════════ -->
+<div id="screen-dashboard" class="screen">
+  <nav class="s-nav">
+    <div class="row gap3">
+      <div class="logo" style="font-size:17px;cursor:pointer" onclick="goTo('landing')">
+        <svg width="21" height="21"><use href="#ic-hanger" stroke="#0ea5e9"/></svg>FitCheck AI
+      </div>
+    </div>
+    <div class="row gap3">
+      <button onclick="toggleTheme()" class="ico-btn" id="theme-btn-dash">🌙</button>
+      <button class="btn btn-primary sm" onclick="tryGoToStudio()">New Try-On</button>
+      <div class="av-btn" onclick="goTo('dashboard')">U</div>
+    </div>
+  </nav>
+
+  <div class="screen-with-sidebar">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sb-item act" onclick="showDashTab('overview')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Overview
+      </div>
+      <div class="sb-item" onclick="showDashTab('looks')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Saved Looks
+      </div>
+      <div class="sb-item" onclick="showDashTab('history')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.41"/></svg>
+        History
+      </div>
+      <div class="sb-item" onclick="showDashTab('profile')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        My Profile
+      </div>
+      <div class="sb-section">Plan</div>
+      <div class="sb-item" onclick="goTo('pricing')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Upgrade
+      </div>
+      <div class="sb-item" onclick="goTo('landing')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="sidebar-content">
+      <!-- OVERVIEW TAB -->
+      <div id="dash-overview" class="dash-tab" style="padding:28px 32px">
+        <h2 style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px">Welcome back 👋</h2>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:24px">Here's your style activity at a glance.</p>
+
+        <!-- Stats row -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px">
+          <div class="dash-stat">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Total Try-Ons</div>
+            <div class="stat-big">24</div>
+            <div style="font-size:12px;color:#22c55e;margin-top:4px">↑ 8 this week</div>
+          </div>
+          <div class="dash-stat">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Saved Looks</div>
+            <div class="stat-big">7</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">Across 3 categories</div>
+          </div>
+          <div class="dash-stat">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Avg Fit Score</div>
+            <div class="stat-big" style="color:#22c55e">96%</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">Excellent accuracy</div>
+          </div>
+          <div class="dash-stat">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Plan</div>
+            <div class="stat-big" style="color:var(--brand);font-size:24px">Free</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px"><span onclick="goTo('pricing')" style="color:var(--brand);cursor:pointer;font-weight:600">Upgrade →</span></div>
+          </div>
+        </div>
+
+        <!-- Activity chart -->
+        <div class="card" style="padding:20px;margin-bottom:20px">
+          <div class="between" style="margin-bottom:16px">
+            <span style="font-weight:700;font-size:15px">Try-On Activity (Last 7 days)</span>
+            <span style="font-size:12px;color:var(--muted)">Total: 8</span>
+          </div>
+          <div class="bar-chart">
+            <div class="bar" style="height:30%"></div>
+            <div class="bar" style="height:55%"></div>
+            <div class="bar" style="height:20%"></div>
+            <div class="bar" style="height:80%"></div>
+            <div class="bar" style="height:45%"></div>
+            <div class="bar" style="height:100%"></div>
+            <div class="bar" style="height:60%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px">
+            <span style="font-size:11px;color:var(--faint)">Mon</span><span style="font-size:11px;color:var(--faint)">Tue</span>
+            <span style="font-size:11px;color:var(--faint)">Wed</span><span style="font-size:11px;color:var(--faint)">Thu</span>
+            <span style="font-size:11px;color:var(--faint)">Fri</span><span style="font-size:11px;color:var(--faint)">Sat</span>
+            <span style="font-size:11px;color:var(--faint)">Sun</span>
+          </div>
+        </div>
+
+        <!-- Recent looks -->
+        <div class="between" style="margin-bottom:14px">
+          <span style="font-weight:700;font-size:15px">Recent Looks</span>
+          <button class="btn btn-ghost sm" onclick="showDashTab('looks')">View All</button>
+        </div>
+        <div class="dash-grid">
+          <div class="look-card" onclick="tryGoToStudio()">
+            <div class="look-thumb" style="background:linear-gradient(135deg,#2c1a2e,#1e1220)">
+              <span style="font-size:52px">🧥</span>
+              <div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">98%</div>
+            </div>
+            <div class="look-meta">
+              <p style="font-weight:700;font-size:13px;color:var(--text)">Dark Blazer</p>
+              <p style="font-size:11px;color:var(--muted)">2 hours ago · Size M</p>
+            </div>
+          </div>
+          <div class="look-card" onclick="tryGoToStudio()">
+            <div class="look-thumb" style="background:linear-gradient(135deg,#1a2040,#0f1530)">
+              <span style="font-size:52px">⌚</span>
+              <div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">95%</div>
+            </div>
+            <div class="look-meta">
+              <p style="font-weight:700;font-size:13px;color:var(--text)">Silver Watch</p>
+              <p style="font-size:11px;color:var(--muted)">Yesterday · Wrist 16cm</p>
+            </div>
+          </div>
+          <div class="look-card" onclick="tryGoToStudio()">
+            <div class="look-thumb" style="background:linear-gradient(135deg,#1a1535,#0f0e28)">
+              <span style="font-size:52px">👓</span>
+              <div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">97%</div>
+            </div>
+            <div class="look-meta">
+              <p style="font-weight:700;font-size:13px;color:var(--text)">Aviator Shades</p>
+              <p style="font-size:11px;color:var(--muted)">2 days ago</p>
+            </div>
+          </div>
+          <div class="look-card" style="border:2px dashed var(--bdr);display:flex;align-items:center;justify-content:center;aspect-ratio:unset;min-height:180px" onclick="tryGoToStudio()">
+            <div style="text-align:center;color:var(--muted)">
+              <div style="font-size:28px;margin-bottom:6px">+</div>
+              <p style="font-size:13px;font-weight:600">New Try-On</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOOKS TAB -->
+      <div id="dash-looks" class="dash-tab" style="display:none;padding:28px 32px">
+        <div class="between" style="margin-bottom:20px">
+          <div><h2 style="font-size:20px;font-weight:800;color:var(--text)">Saved Looks</h2><p style="font-size:13px;color:var(--muted);margin-top:2px">7 looks saved</p></div>
+          <button class="btn btn-primary sm" onclick="tryGoToStudio()">+ New Try-On</button>
+        </div>
+        <div class="dash-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">
+          <div class="look-card"><div class="look-thumb" style="background:linear-gradient(135deg,#2c1a2e,#1e1220)"><span style="font-size:52px">🧥</span><div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">98%</div></div><div class="look-meta"><p style="font-weight:700;font-size:13px">Dark Blazer</p><p style="font-size:11px;color:var(--muted)">Size M</p></div></div>
+          <div class="look-card"><div class="look-thumb" style="background:linear-gradient(135deg,#1a2040,#0f1530)"><span style="font-size:52px">⌚</span><div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">95%</div></div><div class="look-meta"><p style="font-weight:700;font-size:13px">Silver Watch</p><p style="font-size:11px;color:var(--muted)">Wrist 16cm</p></div></div>
+          <div class="look-card"><div class="look-thumb" style="background:linear-gradient(135deg,#1a1535,#0f0e28)"><span style="font-size:52px">👓</span><div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">97%</div></div><div class="look-meta"><p style="font-weight:700;font-size:13px">Aviators</p><p style="font-size:11px;color:var(--muted)">Face 54mm</p></div></div>
+          <div class="look-card"><div class="look-thumb" style="background:linear-gradient(135deg,#0f2030,#081520)"><span style="font-size:52px">👟</span><div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">94%</div></div><div class="look-meta"><p style="font-weight:700;font-size:13px">Air Max</p><p style="font-size:11px;color:var(--muted)">UK 9</p></div></div>
+          <div class="look-card"><div class="look-thumb" style="background:linear-gradient(135deg,#201020,#150a10)"><span style="font-size:52px">💍</span><div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">99%</div></div><div class="look-meta"><p style="font-weight:700;font-size:13px">Diamond Ring</p><p style="font-size:11px;color:var(--muted)">Size 16</p></div></div>
+          <div class="look-card"><div class="look-thumb" style="background:linear-gradient(135deg,#1a1020,#100a08)"><span style="font-size:52px">🧢</span><div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">96%</div></div><div class="look-meta"><p style="font-weight:700;font-size:13px">Vintage Cap</p><p style="font-size:11px;color:var(--muted)">Head 58cm</p></div></div>
+          <div class="look-card"><div class="look-thumb" style="background:linear-gradient(135deg,#101820,#080f18)"><span style="font-size:52px">👜</span><div style="position:absolute;bottom:8px;right:8px;background:rgba(34,197,94,.9);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px">93%</div></div><div class="look-meta"><p style="font-weight:700;font-size:13px">Leather Bag</p><p style="font-size:11px;color:var(--muted)">Standard</p></div></div>
+          <div class="look-card" style="border:2px dashed var(--bdr);display:flex;align-items:center;justify-content:center;min-height:180px" onclick="tryGoToStudio()"><div style="text-align:center;color:var(--muted)"><div style="font-size:28px;margin-bottom:6px">+</div><p style="font-size:13px;font-weight:600">Add Look</p></div></div>
+        </div>
+      </div>
+
+      <!-- HISTORY TAB -->
+      <div id="dash-history" class="dash-tab" style="display:none;padding:28px 32px">
+        <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:20px">Try-On History</h2>
+        <div class="card" style="overflow:hidden">
+          <table class="tbl">
+            <thead><tr><th>Product</th><th>Type</th><th>Fit Score</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><div class="row gap2"><span style="font-size:18px">🧥</span><span style="font-weight:600">Dark Blazer</span></div></td><td><span class="tbl-badge active">Clothing</span></td><td><span style="color:#22c55e;font-weight:700">98%</span></td><td style="color:var(--muted)">Today, 2:14 PM</td><td><button class="btn btn-ghost sm" onclick="tryGoToStudio()">Re-try</button></td></tr>
+              <tr><td><div class="row gap2"><span style="font-size:18px">⌚</span><span style="font-weight:600">Silver Watch</span></div></td><td><span class="tbl-badge pending">Watch</span></td><td><span style="color:#22c55e;font-weight:700">95%</span></td><td style="color:var(--muted)">Yesterday, 7:02 PM</td><td><button class="btn btn-ghost sm" onclick="tryGoToStudio()">Re-try</button></td></tr>
+              <tr><td><div class="row gap2"><span style="font-size:18px">👓</span><span style="font-weight:600">Aviators</span></div></td><td><span class="tbl-badge active">Eyewear</span></td><td><span style="color:#22c55e;font-weight:700">97%</span></td><td style="color:var(--muted)">2 days ago</td><td><button class="btn btn-ghost sm" onclick="tryGoToStudio()">Re-try</button></td></tr>
+              <tr><td><div class="row gap2"><span style="font-size:18px">👟</span><span style="font-weight:600">Air Max 270</span></div></td><td><span class="tbl-badge active">Shoes</span></td><td><span style="color:#22c55e;font-weight:700">94%</span></td><td style="color:var(--muted)">3 days ago</td><td><button class="btn btn-ghost sm" onclick="tryGoToStudio()">Re-try</button></td></tr>
+              <tr><td><div class="row gap2"><span style="font-size:18px">💍</span><span style="font-weight:600">Diamond Ring</span></div></td><td><span class="tbl-badge pending">Jewellery</span></td><td><span style="color:#22c55e;font-weight:700">99%</span></td><td style="color:var(--muted)">5 days ago</td><td><button class="btn btn-ghost sm" onclick="tryGoToStudio()">Re-try</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PROFILE TAB -->
+      <div id="dash-profile" class="dash-tab" style="display:none;padding:28px 32px">
+        <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:20px">My Profile</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:700px">
+          <div class="card" style="padding:24px;grid-column:1/-1">
+            <div class="row gap4" style="margin-bottom:20px">
+              <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--purple));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff">U</div>
+              <div><p style="font-weight:800;font-size:16px;color:var(--text)">User Name</p><p style="font-size:13px;color:var(--muted)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f7a7c6a7d4f6a626e6663216c6062">[email&#160;protected]</a></p><span class="tbl-badge free" style="margin-top:6px;display:inline-block">Free Plan</span></div>
+              <button class="btn btn-primary sm" style="margin-left:auto" onclick="goTo('pricing')">Upgrade to Pro</button>
+            </div>
+          </div>
+          <div class="card" style="padding:20px">
+            <p style="font-weight:700;font-size:14px;margin-bottom:14px">Body Measurements</p>
+            <div class="col gap3">
+              <div class="field"><label>Height (cm)</label><input type="number" class="fit-in" value="175"/></div>
+              <div class="field"><label>Weight (kg)</label><input type="number" class="fit-in" value="70"/></div>
+              <div class="field"><label>Age</label><input type="number" class="fit-in" value="25"/></div>
+              <div class="field"><label>Body Type</label><select class="fit-in"><option>Regular</option><option>Athletic</option><option>Slim</option><option>Plus Size</option></select></div>
+            </div>
+          </div>
+          <div class="card" style="padding:20px">
+            <p style="font-weight:700;font-size:14px;margin-bottom:14px">Preferences</p>
+            <div class="col gap3">
+              <div class="field"><label>Default Product Type</label><select class="fit-in"><option>Clothing</option><option>Watch</option><option>Jewellery</option></select></div>
+              <div class="field"><label>Preferred Size System</label><select class="fit-in"><option>Indian (IN)</option><option>UK</option><option>US</option><option>EU</option></select></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0">
+                <span style="font-size:14px;font-weight:600">AI Styling Suggestions</span>
+                <div onclick="this.classList.toggle('on')" style="width:44px;height:24px;background:var(--brand);border-radius:999px;position:relative;cursor:pointer"><div style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s"></div></div>
+              </div>
+            </div>
+          </div>
+          <div style="grid-column:1/-1">
+            <button class="btn btn-primary md" style="justify-content:center">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ B2B PORTAL ═══════════════════════ -->
+<div id="screen-b2b" class="screen">
+  <nav class="nav">
+    <div class="logo" onclick="goTo('landing')" style="cursor:pointer">
+      <svg width="26" height="26"><use href="#ic-hanger" stroke="#0ea5e9"/></svg>FitCheck AI <span style="font-size:11px;font-weight:700;color:#a78bfa;margin-left:6px;padding:2px 8px;background:rgba(124,58,237,.15);border-radius:999px">Business</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="javascript:void(0)" onclick="goTo('pricing')">Pricing</a></li>
+      <li><a href="javascript:void(0)" onclick="goTo('landing')">Home</a></li>
+    </ul>
+    <div class="row gap3">
+      <button onclick="toggleTheme()" class="ico-btn" id="theme-btn-b2b">🌙</button>
+      <button class="btn btn-primary sm" onclick="openLogin()">Get API Access</button>
+    </div>
+  </nav>
+
+  <section class="sec" style="padding-top:64px;text-align:center">
+    <div class="wrap">
+      <span class="badge" style="background:rgba(124,58,237,.12);color:#a78bfa;border:1px solid rgba(124,58,237,.2);margin-bottom:16px;display:inline-flex">For Businesses &amp; Developers</span>
+      <h1 style="font-size:clamp(32px,5vw,56px);font-weight:900;color:var(--text);line-height:1.06;margin-bottom:16px">Embed Virtual Try-On<br><span style="color:#7c3aed">in Your Store</span></h1>
+      <p style="font-size:17px;color:var(--muted);max-width:500px;margin:0 auto 36px;line-height:1.7">Add FitCheck AI to your e-commerce platform in under 10 minutes. Reduce returns by up to 40% and boost conversion.</p>
+      <div class="row gap4" style="justify-content:center">
+        <button class="btn btn-primary lg glow-b" onclick="openLogin()">Start Free Trial</button>
+        <button class="btn btn-ghost lg" onclick="showDemoApiModal()">View API Docs</button>
+      </div>
+
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:600px;margin:52px auto 0">
+        <div class="card" style="padding:20px;text-align:center"><div style="font-size:32px;font-weight:900;color:var(--brand)">40%</div><div style="font-size:13px;color:var(--muted);margin-top:4px">Fewer returns</div></div>
+        <div class="card" style="padding:20px;text-align:center"><div style="font-size:32px;font-weight:900;color:var(--brand)">2.8×</div><div style="font-size:13px;color:var(--muted);margin-top:4px">Conversion uplift</div></div>
+        <div class="card" style="padding:20px;text-align:center"><div style="font-size:32px;font-weight:900;color:var(--brand)">&lt;10min</div><div style="font-size:13px;color:var(--muted);margin-top:4px">Integration time</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Integration options -->
+  <section class="sec" style="padding-top:40px">
+    <div class="wrap">
+      <h2 style="font-size:26px;font-weight:800;color:var(--text);margin-bottom:24px">Integration Options</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+        <div class="b2b-card">
+          <div style="font-size:28px;margin-bottom:10px">🔌</div>
+          <h3 style="font-weight:800;font-size:16px;color:var(--text);margin-bottom:8px">REST API</h3>
+          <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px">Full programmatic access. Send a person image + product image, receive rendered output.</p>
+          <div class="api-box">POST /v1/try-on<br>→ { result_url, fit_score }</div>
+        </div>
+        <div class="b2b-card">
+          <div style="font-size:28px;margin-bottom:10px">🛍️</div>
+          <h3 style="font-weight:800;font-size:16px;color:var(--text);margin-bottom:8px">JS Widget</h3>
+          <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px">Drop one script tag into your product page. Works with Shopify, WooCommerce, Magento.</p>
+          <div class="api-box">&lt;script src="fitcheck.io/widget.js"<br>  data-key="YOUR_KEY"&gt;</div>
+        </div>
+        <div class="b2b-card">
+          <div style="font-size:28px;margin-bottom:10px">📦</div>
+          <h3 style="font-weight:800;font-size:16px;color:var(--text);margin-bottom:8px">SDK</h3>
+          <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:14px">Native SDKs for React, Vue, and mobile (iOS/Android). Full TypeScript support.</p>
+          <div class="api-box">npm install @fitcheck/sdk<br>import FitCheck from '@fitcheck/sdk'</div>
+        </div>
+      </div>
+
+      <!-- B2B Dashboard preview -->
+      <h2 style="font-size:22px;font-weight:800;color:var(--text);margin:48px 0 20px">Your Business Dashboard</h2>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
+        <div class="dash-stat"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">API Calls (Mo)</div><div class="stat-big">8,241</div><div style="font-size:12px;color:#22c55e;margin-top:4px">↑ 23% vs last mo</div></div>
+        <div class="dash-stat"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Return Rate</div><div class="stat-big" style="color:#22c55e">↓38%</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Since integration</div></div>
+        <div class="dash-stat"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Conversion</div><div class="stat-big" style="color:var(--brand)">+34%</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Uplift this month</div></div>
+        <div class="dash-stat"><div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Uptime</div><div class="stat-big" style="color:#22c55e">99.9%</div><div style="font-size:12px;color:var(--muted);margin-top:4px">SLA guaranteed</div></div>
+      </div>
+
+      <!-- Contact form -->
+      <div class="card" style="padding:32px;max-width:560px">
+        <h3 style="font-weight:800;font-size:18px;color:var(--text);margin-bottom:6px">Talk to Sales</h3>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Get a custom quote for your business volume.</p>
+        <div class="col gap3">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="field"><label>Name</label><input type="text" class="fit-in" placeholder="Your name"/></div>
+            <div class="field"><label>Company</label><input type="text" class="fit-in" placeholder="Company name"/></div>
+          </div>
+          <div class="field"><label>Email</label><input type="email" class="fit-in" placeholder="work@company.com"/></div>
+          <div class="field"><label>Monthly volume</label><select class="fit-in"><option>Under 1,000 calls</option><option>1,000 – 10,000</option><option>10,000 – 100,000</option><option>100,000+</option></select></div>
+          <button class="btn btn-primary md" style="justify-content:center;margin-top:4px" onclick="showToast('✓ Message sent! We\'ll be in touch within 24h.','#22c55e')">Send Message →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════ ADMIN PANEL ═══════════════════════ -->
+<div id="screen-admin" class="screen">
+  <nav class="s-nav" style="background:rgba(15,10,30,0.9);border-bottom-color:#2d1e45">
+    <div class="row gap3">
+      <div class="logo" style="font-size:16px">
+        <svg width="20" height="20"><use href="#ic-hanger" stroke="#7c3aed"/></svg>
+        FitCheck <span style="color:#a78bfa;margin-left:4px">Admin</span>
+      </div>
+    </div>
+    <div class="row gap3">
+      <span style="font-size:12px;padding:4px 12px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:999px;color:#a78bfa;font-weight:700">Super Admin</span>
+      <button onclick="goTo('landing')" class="btn btn-ghost sm">← Exit Admin</button>
+    </div>
+  </nav>
+
+  <div class="screen-with-sidebar">
+    <!-- Admin sidebar -->
+    <div class="sidebar" style="background:rgba(15,10,30,.6);border-right-color:#2d1e45">
+      <div class="sb-item act" onclick="showAdminTab('overview')" id="asb-overview">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Overview
+      </div>
+      <div class="sb-item" onclick="showAdminTab('users')" id="asb-users">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Users
+      </div>
+      <div class="sb-item" onclick="showAdminTab('tryon')" id="asb-tryon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Try-Ons
+      </div>
+      <div class="sb-item" onclick="showAdminTab('revenue')" id="asb-revenue">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Revenue
+      </div>
+      <div class="sb-item" onclick="showAdminTab('moderation')" id="asb-moderation">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Moderation
+      </div>
+      <div class="sb-section">System</div>
+      <div class="sb-item" onclick="showAdminTab('settings')" id="asb-settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
+      </div>
+    </div>
+
+    <div class="sidebar-content">
+      <!-- OVERVIEW -->
+      <div id="admin-overview" class="admin-tab" style="padding:24px 28px">
+        <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:20px">Platform Overview</h2>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Total Users</div><div class="stat-big">12,847</div><div style="font-size:11px;color:#22c55e;margin-top:3px">↑ 234 today</div></div>
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Try-Ons Today</div><div class="stat-big">3,291</div><div style="font-size:11px;color:#22c55e;margin-top:3px">↑ 18% vs yesterday</div></div>
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">MRR</div><div class="stat-big">₹2.4L</div><div style="font-size:11px;color:#22c55e;margin-top:3px">↑ 12% this month</div></div>
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">AI Uptime</div><div class="stat-big" style="color:#22c55e">99.9%</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Last 30 days</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+          <div class="card" style="padding:20px">
+            <div class="between" style="margin-bottom:14px"><span style="font-weight:700">Try-Ons (Last 14 days)</span><span style="font-size:12px;color:var(--muted)">Daily average: 2,950</span></div>
+            <div class="bar-chart" style="height:100px">
+              <div class="bar" style="height:60%"></div><div class="bar" style="height:75%"></div><div class="bar" style="height:50%"></div><div class="bar" style="height:88%"></div><div class="bar" style="height:65%"></div><div class="bar" style="height:45%"></div><div class="bar" style="height:90%"></div><div class="bar" style="height:70%"></div><div class="bar" style="height:80%"></div><div class="bar" style="height:55%"></div><div class="bar" style="height:95%"></div><div class="bar" style="height:72%"></div><div class="bar" style="height:85%"></div><div class="bar" style="height:100%"></div>
+            </div>
+          </div>
+          <div class="card" style="padding:20px">
+            <p style="font-weight:700;margin-bottom:14px">Plan Distribution</p>
+            <div class="col gap3">
+              <div><div class="between" style="margin-bottom:4px"><span style="font-size:13px">Free</span><span style="font-size:13px;font-weight:700">78%</span></div><div style="height:6px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="width:78%;height:100%;background:var(--muted);border-radius:99px"></div></div></div>
+              <div><div class="between" style="margin-bottom:4px"><span style="font-size:13px">Pro</span><span style="font-size:13px;font-weight:700">18%</span></div><div style="height:6px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="width:18%;height:100%;background:var(--brand);border-radius:99px"></div></div></div>
+              <div><div class="between" style="margin-bottom:4px"><span style="font-size:13px">Business</span><span style="font-size:13px;font-weight:700">4%</span></div><div style="height:6px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="width:4%;height:100%;background:#7c3aed;border-radius:99px"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div id="admin-users" class="admin-tab" style="display:none;padding:24px 28px">
+        <div class="between" style="margin-bottom:18px">
+          <h2 style="font-size:20px;font-weight:800;color:var(--text)">User Management</h2>
+          <div class="row gap2">
+            <input type="text" class="fit-in" placeholder="Search users…" style="width:200px"/>
+            <button class="btn btn-ghost sm">Filter</button>
+          </div>
+        </div>
+        <div class="card" style="overflow:hidden">
+          <table class="tbl">
+            <thead><tr><th>User</th><th>Plan</th><th>Try-Ons</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div class="row gap2"><div style="width:30px;height:30px;border-radius:50%;background:rgba(14,165,233,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--brand)">A</div><div><p style="font-weight:600;font-size:13px">Arjun Patel</p><p style="font-size:11px;color:var(--muted)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="33524159465d73565e525a5f1d505c5e">[email&#160;protected]</a></p></div></div></td><td><span class="tbl-badge pro">Pro</span></td><td>142</td><td style="color:var(--muted)">Jan 12, 2025</td><td><span class="tbl-badge active">Active</span></td><td><button class="btn btn-ghost sm">View</button></td></tr>
+              <tr><td><div class="row gap2"><div style="width:30px;height:30px;border-radius:50%;background:rgba(124,58,237,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#a78bfa">R</div><div><p style="font-weight:600;font-size:13px">Riya Shah</p><p style="font-size:11px;color:var(--muted)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5c7dcccd4f5d3d4c6dddcdadb9bdcdb">[email&#160;protected]</a></p></div></div></td><td><span class="tbl-badge active">Free</span></td><td>18</td><td style="color:var(--muted)">Feb 3, 2025</td><td><span class="tbl-badge active">Active</span></td><td><button class="btn btn-ghost sm">View</button></td></tr>
+              <tr><td><div class="row gap2"><div style="width:30px;height:30px;border-radius:50%;background:rgba(249,115,22,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fb923c">S</div><div><p style="font-weight:600;font-size:13px">Sneha Menon</p><p style="font-size:11px;color:var(--muted)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7c4d9d2dfd6f7c4c3d8c5d299d4d8da">[email&#160;protected]</a></p></div></div></td><td><span class="tbl-badge" style="background:rgba(168,85,247,.15);color:#a78bfa">Business</span></td><td>2,841</td><td style="color:var(--muted)">Dec 5, 2024</td><td><span class="tbl-badge active">Active</span></td><td><button class="btn btn-ghost sm">View</button></td></tr>
+              <tr><td><div class="row gap2"><div style="width:30px;height:30px;border-radius:50%;background:rgba(248,113,113,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#f87171">K</div><div><p style="font-weight:600;font-size:13px">Karan Gupta</p><p style="font-size:11px;color:var(--muted)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="80ebe1f2e1eec0f4e5f3f4aee3efed">[email&#160;protected]</a></p></div></div></td><td><span class="tbl-badge free">Free</span></td><td>3</td><td style="color:var(--muted)">Mar 1, 2025</td><td><span class="tbl-badge banned">Banned</span></td><td><button class="btn btn-ghost sm" style="color:#f87171">Unban</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MODERATION -->
+      <div id="admin-moderation" class="admin-tab" style="display:none;padding:24px 28px">
+        <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:6px">Content Moderation</h2>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Review flagged uploads and enforce usage policies.</p>
+        <div class="col gap3">
+          <div class="card" style="padding:16px;border-left:3px solid #f87171">
+            <div class="between">
+              <div class="row gap3"><span style="font-size:20px">⚠️</span><div><p style="font-weight:700;font-size:14px;color:var(--text)">Suspicious upload pattern detected</p><p style="font-size:12px;color:var(--muted)">User <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dbb0baa9bab59bafbea8aff5b8b4b6">[email&#160;protected]</a> — 50 uploads in 2 minutes</p></div></div>
+              <div class="row gap2"><button class="btn btn-ghost sm">Dismiss</button><button class="btn sm" style="background:rgba(248,113,113,.15);color:#f87171;border-radius:8px;padding:6px 14px;font-weight:700">Ban User</button></div>
+            </div>
+          </div>
+          <div class="card" style="padding:16px;border-left:3px solid #f97316">
+            <div class="between">
+              <div class="row gap3"><span style="font-size:20px">🤖</span><div><p style="font-weight:700;font-size:14px;color:var(--text)">Bot activity detected</p><p style="font-size:12px;color:var(--muted)">API key abc-123 — 450 calls/min (limit: 60)</p></div></div>
+              <div class="row gap2"><button class="btn btn-ghost sm">Whitelist</button><button class="btn sm" style="background:rgba(249,115,22,.15);color:#f97316;border-radius:8px;padding:6px 14px;font-weight:700">Rate Limit</button></div>
+            </div>
+          </div>
+          <div class="card" style="padding:16px;border-left:3px solid #22c55e">
+            <div class="row gap3"><span style="font-size:20px">✅</span><div><p style="font-weight:600;font-size:14px;color:var(--text)">All other uploads clean</p><p style="font-size:12px;color:var(--muted)">Last checked: just now · 3,241 scans passed</p></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="admin-settings" class="admin-tab" style="display:none;padding:24px 28px">
+        <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:20px">System Settings</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:700px">
+          <div class="card" style="padding:20px">
+            <p style="font-weight:700;font-size:14px;margin-bottom:14px">Rate Limits</p>
+            <div class="col gap3">
+              <div class="field"><label>Free tier daily limit</label><input type="number" class="fit-in" value="3"/></div>
+              <div class="field"><label>Pro tier daily limit</label><input type="number" class="fit-in" value="999"/></div>
+              <div class="field"><label>API calls / minute</label><input type="number" class="fit-in" value="60"/></div>
+            </div>
+          </div>
+          <div class="card" style="padding:20px">
+            <p style="font-weight:700;font-size:14px;margin-bottom:14px">AI Model</p>
+            <div class="col gap3">
+              <div class="field"><label>Model</label><select class="fit-in"><option>IDM-VTON (Recommended)</option><option>OOTDiffusion</option><option>CatVTON</option></select></div>
+              <div class="field"><label>Replicate API Key</label><input type="password" class="fit-in" placeholder="r8_••••••••••••••••"/></div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:14px;font-weight:600">Maintenance Mode</span>
+                <div style="width:44px;height:24px;background:var(--bdr);border-radius:999px;position:relative;cursor:pointer"><div style="position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s"></div></div>
+              </div>
+            </div>
+          </div>
+          <div style="grid-column:1/-1">
+            <button class="btn btn-primary md" style="justify-content:center" onclick="showToast('✓ Settings saved','#22c55e')">Save Settings</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRY-ONS + REVENUE (simple placeholders) -->
+      <div id="admin-tryon" class="admin-tab" style="display:none;padding:24px 28px">
+        <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:20px">Try-On Analytics</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Total All-Time</div><div class="stat-big">284,112</div></div>
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Avg Render Time</div><div class="stat-big">2.4s</div></div>
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Top Category</div><div class="stat-big" style="font-size:20px">Clothing 64%</div></div>
+        </div>
+        <div class="card" style="padding:20px">
+          <p style="font-weight:700;margin-bottom:12px">Category Breakdown</p>
+          <div class="col gap3">
+            <div><div class="between" style="margin-bottom:4px"><span style="font-size:13px">👗 Clothing</span><span style="font-weight:700">64%</span></div><div style="height:8px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="width:64%;height:100%;background:linear-gradient(90deg,var(--brand),#38bdf8);border-radius:99px"></div></div></div>
+            <div><div class="between" style="margin-bottom:4px"><span style="font-size:13px">⌚ Watches</span><span style="font-weight:700">18%</span></div><div style="height:8px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="width:18%;height:100%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:99px"></div></div></div>
+            <div><div class="between" style="margin-bottom:4px"><span style="font-size:13px">👓 Eyewear</span><span style="font-weight:700">9%</span></div><div style="height:8px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="width:9%;height:100%;background:linear-gradient(90deg,#f97316,#fb923c);border-radius:99px"></div></div></div>
+            <div><div class="between" style="margin-bottom:4px"><span style="font-size:13px">💍 Jewellery</span><span style="font-weight:700">6%</span></div><div style="height:8px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="width:6%;height:100%;background:linear-gradient(90deg,#ec4899,#f472b6);border-radius:99px"></div></div></div>
+            <div><div class="between" style="margin-bottom:4px"><span style="font-size:13px">Other</span><span style="font-weight:700">3%</span></div><div style="height:8px;background:var(--bdr);border-radius:99px;overflow:hidden"><div style="width:3%;height:100%;background:var(--muted);border-radius:99px"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="admin-revenue" class="admin-tab" style="display:none;padding:24px 28px">
+        <h2 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:20px">Revenue</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">MRR</div><div class="stat-big">₹2,41,500</div><div style="font-size:11px;color:#22c55e;margin-top:3px">↑ 12% MoM</div></div>
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">ARR</div><div class="stat-big">₹28.9L</div><div style="font-size:11px;color:#22c55e;margin-top:3px">On track</div></div>
+          <div class="dash-stat"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Paying Users</div><div class="stat-big">2,821</div><div style="font-size:11px;color:var(--muted);margin-top:3px">22% conversion</div></div>
+        </div>
+        <div class="card" style="padding:20px">
+          <p style="font-weight:700;margin-bottom:14px">Revenue (Last 6 months)</p>
+          <div class="bar-chart" style="height:120px">
+            <div class="bar" style="height:45%"></div><div class="bar" style="height:58%"></div><div class="bar" style="height:72%"></div><div class="bar" style="height:65%"></div><div class="bar" style="height:85%"></div><div class="bar" style="height:100%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px">
+            <span style="font-size:11px;color:var(--faint)">Oct</span><span style="font-size:11px;color:var(--faint)">Nov</span><span style="font-size:11px;color:var(--faint)">Dec</span><span style="font-size:11px;color:var(--faint)">Jan</span><span style="font-size:11px;color:var(--faint)">Feb</span><span style="font-size:11px;color:var(--faint)">Mar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ UPDATED NAV with all links ═══════════════════ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ── Theme toggle ── */
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  var isDark = !document.body.classList.contains('light');
+  ['theme-btn','theme-btn-dash','theme-btn-b2b'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.textContent=isDark?'🌙':'☀️';
+  });
+}
+
+/* ── Billing toggle ── */
+var annualMode=false;
+function toggleBilling(){
+  annualMode=!annualMode;
+  var knob=document.getElementById('billing-knob');
+  knob.style.transform=annualMode?'translateX(22px)':'translateX(0)';
+  document.getElementById('pro-price').innerHTML=annualMode?'₹399<span>/mo</span>':'₹499<span>/mo</span>';
+  document.getElementById('biz-price').innerHTML=annualMode?'₹3,999<span>/mo</span>':'₹4,999<span>/mo</span>';
+}
+
+/* ── FAQ accordion ── */
+function toggleFaq(el){
+  var ans=el.querySelector('.faq-ans');
+  var arr=el.querySelector('.faq-arrow');
+  var open=ans.style.display==='block';
+  ans.style.display=open?'none':'block';
+  arr.textContent=open?'+':'−';
+  arr.style.transform=open?'rotate(0)':'rotate(45deg)';
+}
+
+/* ── Dashboard tabs ── */
+function showDashTab(tab){
+  document.querySelectorAll('.dash-tab').forEach(function(t){t.style.display='none';});
+  document.querySelectorAll('.sidebar .sb-item').forEach(function(i){i.classList.remove('act');});
+  var el=document.getElementById('dash-'+tab);
+  if(el) el.style.display='block';
+  var tabNames={overview:0,looks:1,history:2,profile:3,upgrade:4};
+  var items=document.querySelectorAll('#screen-dashboard .sb-item');
+  if(tabNames[tab]!==undefined && items[tabNames[tab]]) items[tabNames[tab]].classList.add('act');
+}
+
+/* ── Admin tabs ── */
+function showAdminTab(tab){
+  document.querySelectorAll('.admin-tab').forEach(function(t){t.style.display='none';});
+  document.querySelectorAll('#screen-admin .sb-item').forEach(function(i){i.classList.remove('act');});
+  var el=document.getElementById('admin-'+tab);
+  if(el) el.style.display='block';
+  var sb=document.getElementById('asb-'+tab);
+  if(sb) sb.classList.add('act');
+}
+
+/* ── B2B API modal ── */
+function showDemoApiModal(){
+  showToast('📖 API docs coming soon — contact sales for early access','#7c3aed');
+}
+
+/* ── Update goTo to handle new screens ── */
+var _origGoTo = goTo;
+goTo = function(id){
+  _origGoTo(id);
+  /* Add pricing/b2b/admin/dashboard to existing goTo */
+  var extras=['pricing','dashboard','b2b','admin'];
+  if(extras.indexOf(id)!==-1){
+    document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+    var el=document.getElementById('screen-'+id);
+    if(el){el.classList.add('active');window.scrollTo(0,0);}
+  }
+};
+
+/* ── Update nav links in existing screens ── */
+window.addEventListener('load',function(){
+  /* inject pricing + dashboard + admin links into landing nav */
+  var navLinks=document.querySelector('#screen-landing .nav-links');
+  if(navLinks){
+    navLinks.innerHTML='<li><a href="#how-it-works">How it Works</a></li><li><a href="javascript:void(0)" onclick="goTo(\'pricing\')">Pricing</a></li><li><a href="javascript:void(0)" onclick="goTo(\'b2b\')">Business</a></li><li><a href="#privacy">Privacy</a></li>';
+  }
+});
+
+/* ── Triple-click logo → admin ── */
+var _clickCount=0;
+document.addEventListener('DOMContentLoaded',function(){
+  var logo=document.querySelector('#screen-landing .logo');
+  if(logo) logo.addEventListener('click',function(){
+    _clickCount++;
+    if(_clickCount>=3){ _clickCount=0; goTo('admin'); showToast('🔐 Admin panel','#7c3aed'); }
+    setTimeout(function(){_clickCount=0;},600);
+  });
+});
+</script>
+
+<!-- ══════════ TOP-UP MODAL ══════════ -->
+<div class="m-ov" id="topup-ov" onclick="if(event.target===this)closeModal('topup-ov')">
+  <div class="modal" style="max-width:420px">
+    <button class="m-close" onclick="closeModal('topup-ov')" aria-label="Close">✕</button>
+    <div class="m-top" style="background:linear-gradient(135deg,#1a0e05,#0b1120);height:110px">
+      <div class="m-glow" style="background:radial-gradient(circle at 50% 70%,rgba(249,115,22,.35),transparent 70%)"></div>
+      <div style="position:relative;z-index:1;text-align:center">
+        <div style="font-size:36px;margin-bottom:4px">⚡</div>
+        <p style="font-size:12px;font-weight:700;color:#fb923c;letter-spacing:.08em;text-transform:uppercase">Buy Credits</p>
+      </div>
+    </div>
+    <div class="m-body" style="text-align:center;padding:22px 28px 10px">
+      <h2 style="font-size:19px;font-weight:800;color:#fff;margin-bottom:6px">Priority Try-Ons</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6">Credits never expire. 1 credit = 1 priority try-on using Replicate IDM-VTON — best quality available.</p>
+      <div class="col gap3">
+        <div class="pack-card" onclick="selectPack('starter',this)" data-pack="starter" data-credits="8" data-price="99">
+          <div class="between"><div style="text-align:left"><p style="font-weight:700;color:#fff;font-size:14px">Starter Pack</p><p style="font-size:12px;color:var(--muted)">8 credits · ₹12.4/try-on</p></div><div style="text-align:right"><p style="font-size:22px;font-weight:900;color:#fff">₹99</p></div></div>
+        </div>
+        <div class="pack-card selected" onclick="selectPack('popular',this)" data-pack="popular" data-credits="20" data-price="199">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#f97316;color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:999px;white-space:nowrap">Most Popular</div>
+          <div class="between"><div style="text-align:left"><p style="font-weight:700;color:#fff;font-size:14px">Popular Pack</p><p style="font-size:12px;color:var(--muted)">20 credits · ₹9.95/try-on</p></div><div style="text-align:right"><p style="font-size:22px;font-weight:900;color:#f97316">₹199</p></div></div>
+        </div>
+        <div class="pack-card" onclick="selectPack('value',this)" data-pack="value" data-credits="50" data-price="449">
+          <div class="between"><div style="text-align:left"><p style="font-weight:700;color:#fff;font-size:14px">Value Pack</p><p style="font-size:12px;color:var(--muted)">50 credits · ₹8.98/try-on</p></div><div style="text-align:right"><p style="font-size:22px;font-weight:900;color:#fff">₹449</p></div></div>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding:10px 14px;background:var(--bg);border:1px solid var(--bdr);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.7;text-align:left">
+        ✅ Credits never expire &nbsp;·&nbsp; ✅ Priority rendering<br/>
+        ✅ Best AI quality (Replicate IDM-VTON)<br/>
+        🔒 Secure payment via Razorpay &nbsp;·&nbsp; Refund if AI fails
+      </div>
+    </div>
+    <div class="m-foot" style="padding:14px 28px 22px;display:flex;flex-direction:column;gap:10px">
+      <button id="pay-btn" onclick="startPayment()" class="btn btn-orange" style="width:100%;padding:13px;font-size:15px;justify-content:center">
+        Pay ₹199 → Get 20 Credits
+      </button>
+      <p style="font-size:11px;color:var(--faint);text-align:center">Free tier: 3 try-ons/day via HuggingFace AI (no cost)</p>
+    </div>
+    <div class="m-bar"></div>
+  </div>
+</div>
+
+<style>
+.pack-card {
+  position:relative;
+  background:var(--surf-hi);border:2px solid var(--bdr);border-radius:14px;
+  padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;
+  margin-bottom:0;
+}
+.pack-card:hover  { border-color:rgba(249,115,22,.4); }
+.pack-card.selected { border-color:#f97316;background:rgba(249,115,22,.05); }
+</style>
+
+<script>
+/* ══════════════════════════════════════
+   CREDIT SYSTEM
+══════════════════════════════════════ */
+var userCredits   = 0;
+var selectedPack  = { id:'popular', credits:20, price:199 };
+
+/* Update all credit-related UI */
+function updateCreditUI(){
+  var badge   = document.getElementById('credit-badge');
+  var row     = document.getElementById('credit-tryon-row');
+  var lbl     = document.getElementById('btn-credit-label');
+  if(!badge) return;
+  if(userCredits > 0){
+    badge.style.display = 'inline-flex';
+    badge.textContent   = '⚡ ' + userCredits + ' credit' + (userCredits===1?'':'s');
+    if(row) row.style.display = 'block';
+    if(lbl) lbl.textContent   = 'Use 1 Credit · ' + userCredits + ' left (Priority AI)';
+  } else {
+    badge.style.display = 'none';
+    if(row) row.style.display = 'none';
+  }
+  /* Update tries badge colour */
+  updateTriesBadge();
+}
+
+/* Open top-up modal */
+function openTopUp(){ openModal('topup-ov'); }
+
+/* Pack selection */
+function selectPack(packId, el){
+  document.querySelectorAll('.pack-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedPack = {
+    id:      packId,
+    credits: parseInt(el.dataset.credits),
+    price:   parseInt(el.dataset.price)
+  };
+  var btn = document.getElementById('pay-btn');
+  if(btn) btn.textContent = 'Pay ₹'+selectedPack.price+' → Get '+selectedPack.credits+' Credits';
+}
+
+/* ── Payment flow ─────────────────────────────────── */
+function startPayment(){
+  if(!isLoggedIn()){
+    closeModal('topup-ov');
+    openLogin();
+    showToast('Please login first to buy credits','#f97316');
+    return;
+  }
+
+  var btn = document.getElementById('pay-btn');
+  btn.textContent = 'Processing…';
+  btn.disabled    = true;
+
+  /* DEMO MODE — simulates successful payment instantly.
+     Replace the setTimeout below with real Razorpay code when ready. */
+  setTimeout(function(){
+    userCredits += selectedPack.credits;
+    updateCreditUI();
+    closeModal('topup-ov');
+    showToast('✓ '+selectedPack.credits+' credits added! Use priority try-ons anytime.','#22c55e');
+    btn.textContent = 'Pay ₹'+selectedPack.price+' → Get '+selectedPack.credits+' Credits';
+    btn.disabled    = false;
+  }, 1400);
+
+  /* ── REAL RAZORPAY (uncomment + add <script src="checkout.razorpay.com/v1/checkout.js"> when ready) ──
+  fetch('/api/v1/credits/order', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},
+    body: JSON.stringify({ pack_id: selectedPack.id })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(order){
+    var rzp = new Razorpay({
+      key:         order.key_id,
+      amount:      order.amount,
+      currency:    order.currency,
+      order_id:    order.order_id,
+      name:        'FitCheck AI',
+      description: selectedPack.credits + ' Try-On Credits',
+      prefill:     { email: order.user_email, name: order.user_name },
+      theme:       { color: '#f97316' },
+      handler: function(payment){
+        fetch('/api/v1/credits/verify', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},
+          body: JSON.stringify({
+            razorpay_order_id:   order.order_id,
+            razorpay_payment_id: payment.razorpay_payment_id,
+            razorpay_signature:  payment.razorpay_signature,
+            pack_id:             selectedPack.id,
+          })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(result){
+          userCredits = result.new_balance;
+          updateCreditUI();
+          closeModal('topup-ov');
+          showToast('✓ '+result.credits_added+' credits added!','#22c55e');
+        });
+      }
+    });
+    rzp.open();
+    btn.textContent = 'Pay ₹'+selectedPack.price+' → Get '+selectedPack.credits+' Credits';
+    btn.disabled    = false;
+  })
+  .catch(function(err){
+    showToast('Payment failed — try again','#f87171');
+    btn.textContent = 'Pay ₹'+selectedPack.price+' → Get '+selectedPack.credits+' Credits';
+    btn.disabled    = false;
+  });
+  ── END RAZORPAY ── */
+}
+
+/* Helper */
+function getToken(){ return localStorage.getItem('fitcheck_token') || ''; }
+
+/* ── Patch generate() to support credit path ──────── */
+var _origGenerate = generate;
+generate = function(useCredits){
+  useCredits = useCredits === true;
+  if(useCredits && userCredits < 1){ openTopUp(); return; }
+  window._useCredits = useCredits;
+  _origGenerate();
+};
+
+/* ── Patch runGenerate() to show engine + deduct ─── */
+var _origRun = runGenerate;
+runGenerate = function(){
+  _origRun();
+  setTimeout(function(){
+    var vl = document.getElementById('res-view');
+    if(vl){
+      vl.textContent = window._useCredits
+        ? 'Front View · Replicate IDM-VTON (Priority ⚡)'
+        : 'Front View · HuggingFace CatVTON (Free 🤗)';
+    }
+    if(window._useCredits){
+      userCredits = Math.max(0, userCredits - 1);
+      updateCreditUI();
+    }
+    window._useCredits = false;
+  }, 3600);
+};
+
+/* ── Init on load ────────────────────────────────── */
+window.addEventListener('load', function(){
+  updateCreditUI();
+  /* In production fetch balance from API:
+  if(isLoggedIn()){
+    fetch('/api/v1/credits/balance', { headers:{Authorization:'Bearer '+getToken()} })
+      .then(function(r){ return r.json(); })
+      .then(function(d){ userCredits = d.credits; updateCreditUI(); });
+  } */
+});
+</script>
+
+</body>
+</html>

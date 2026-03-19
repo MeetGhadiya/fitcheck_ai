@@ -1,1 +1,0 @@
-Write-Host "testcomplete" -ForegroundColor Green

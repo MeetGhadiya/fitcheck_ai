@@ -6,7 +6,7 @@ import secrets
 class Settings(BaseSettings):
     APP_NAME: str = "FitCheck AI"
     DEBUG: bool = False
-    SECRET_KEY: str = secrets.token_urlsafe(32)
+    SECRET_KEY: str = "change-this-secret-key-in-production-set-in-env"  # MUST be configured in .env
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30

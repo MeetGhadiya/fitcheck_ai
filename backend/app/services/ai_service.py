@@ -49,13 +49,9 @@ async def run_tryon(
         return await _run_replicate(person_image_url, product_image_url,
                                      product_type, height_cm, weight_kg, body_type)
 
-    if settings.HUGGINGFACE_TOKEN or True:   # HF Spaces works without auth too
-        logger.info("Routing to HuggingFace (free path)")
-        return await _run_huggingface(person_image_url, product_image_url,
-                                       product_type, height_cm, weight_kg, body_type)
-
-    logger.warning("No AI keys configured — returning mock")
-    return _mock_result()
+    logger.info("Routing to HuggingFace (free path)")
+    return await _run_huggingface(person_image_url, product_image_url,
+                                   product_type, height_cm, weight_kg, body_type)
 
 
 # ── HuggingFace Spaces (FREE) ─────────────────────────
@@ -185,8 +181,11 @@ async def _run_replicate(
             engine           = "replicate",
         )
 
+    except (TimeoutError, RuntimeError) as e:
+        logger.error(f"Replicate error: {type(e).__name__} - {str(e)}")
+        raise RuntimeError(f"AI rendering timeout or failed: {str(e)}")
     except Exception as e:
-        logger.error(f"Replicate error: {e}")
+        logger.error(f"Replicate unexpected error: {type(e).__name__} - {str(e)}")
         raise RuntimeError(f"AI rendering failed: {str(e)}")
 
 

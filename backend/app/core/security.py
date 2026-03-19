@@ -29,7 +29,9 @@ def verify_password(plain: str, hashed: str) -> bool:
 # ── JWT ───────────────────────────────────────────────
 bearer_scheme = HTTPBearer(auto_error=False)
 
-def create_access_token(user_id: str, extra: dict = {}) -> str:
+def create_access_token(user_id: str, extra: Optional[dict] = None) -> str:
+    if extra is None:
+        extra = {}
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )

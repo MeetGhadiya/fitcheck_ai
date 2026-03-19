@@ -67,11 +67,10 @@ async def create_tryon(
     if current_user and use_credits:
         # User wants to use a credit — check balance
         if current_user.credits < 1:
-            raise HTTPException(402, {
-                "error":   "insufficient_credits",
-                "message": "You don't have enough credits. Buy a pack to continue.",
-                "balance": current_user.credits,
-            })
+            raise HTTPException(
+                status_code=402,
+                detail="Insufficient credits. Buy a pack to continue."
+            )
         using_credits = True
     else:
         # Free path — check daily limit

@@ -72,6 +72,7 @@ async def _run_huggingface(
     Space: zhengchong-liu/CatVTON
     Free, but shared GPU — may queue. Timeout = 120s.
     """
+    logger.info(f"Starting HuggingFace try-on processing: person_url={person_image_url[:50]}..., product_url={product_image_url[:50]}...")
     start = time.time()
 
     # HuggingFace Gradio API endpoint

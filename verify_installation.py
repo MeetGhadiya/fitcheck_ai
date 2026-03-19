@@ -91,7 +91,7 @@ for name, url in services:
 print("\n5️⃣  DATABASE MODELS")
 print("-" * 60)
 try:
-    from app.models import user, tryon, product
+    from backend.app.models import user, tryon, product
     print("   ✓ User model importable")
     print("   ✓ TryOn model importable")
     print("   ✓ Product model importable")

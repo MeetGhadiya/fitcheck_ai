@@ -32,7 +32,7 @@ except Exception as e:
 
 print("\n[4] DATABASE MODELS")
 try:
-    from app.models import user, tryon, product
+    from backend.app.models import user, tryon, product
     print("    [OK] User model loaded")
     print("    [OK] TryOn model loaded")
     print("    [OK] Product model loaded")

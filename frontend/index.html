@@ -1013,7 +1013,11 @@ function i(id,w,h,stroke){
                 <!-- BEFORE -->
                 <div style="position:relative;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#141e30,#0f1829);border:1px solid var(--bdr)">
                   <div style="position:absolute;top:8px;left:8px;z-index:5;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.1em;background:rgba(71,85,105,.7);color:#94a3b8;border:1px solid var(--bdr)">BEFORE</div>
-                  <svg viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+                  <!-- Container for real uploaded photo -->
+                  <div id="before-img-container" style="display:none;width:100%;height:100%;position:absolute;top:0;left:0;z-index:10;justify-content:center;align-items:center;background:inherit">
+                    <img id="before-img" src="" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:12px"/>
+                  </div>
+                  <svg viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;position:relative;z-index:1" id="before-svg">
                     <defs>
                       <radialGradient id="sG" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#f5c9a0"/><stop offset="100%" stop-color="#e0a070"/></radialGradient>
                       <radialGradient id="hG" cx="50%" cy="20%" r="70%"><stop offset="0%" stop-color="#3d2408"/><stop offset="100%" stop-color="#1a0e04"/></radialGradient>
@@ -1057,7 +1061,15 @@ function i(id,w,h,stroke){
                   <div style="position:absolute;top:8px;left:8px;z-index:5;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.1em;background:rgba(14,165,233,.15);color:#0ea5e9;border:1px solid rgba(14,165,233,.3);display:flex;align-items:center;gap:4px">
                     <span style="width:5px;height:5px;border-radius:50%;background:#0ea5e9;animation:pglow 1.5s infinite;display:inline-block"></span>AI FIT
                   </div>
-                  <svg viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block" id="result-svg">
+                  <!-- Container for real AI-generated image -->
+                  <div id="after-img-container" style="display:none;width:100%;height:100%;position:absolute;top:0;left:0;z-index:10;justify-content:center;align-items:center;background:inherit;padding:12px">
+                    <img id="after-img" src="" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:10px"/>
+                  </div>
+                  <!-- Error message container -->
+                  <div id="after-error-msg" style="display:none;width:100%;height:100%;position:absolute;top:0;left:0;z-index:10;justify-content:center;align-items:center;background:rgba(14,20,30,0.95);border-radius:12px;color:#94a3b8;font-size:13px;text-align:center;padding:15px">
+                    <span>AI is still processing your look...</span>
+                  </div>
+                  <svg viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;position:relative;z-index:1" id="after-svg">
                     <defs>
                       <radialGradient id="sG2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#f5c9a0"/><stop offset="100%" stop-color="#e0a070"/></radialGradient>
                       <radialGradient id="hG2" cx="50%" cy="20%" r="70%"><stop offset="0%" stop-color="#3d2408"/><stop offset="100%" stop-color="#1a0e04"/></radialGradient>
@@ -1469,10 +1481,42 @@ function runGenerate(){
             clearInterval(poller); clearInterval(msgTimer);
             ov.classList.remove('on'); rs.style.display = 'flex';
             rb.classList.add('on'); as.classList.add('on');
-            if (result.result_front_url && !result.result_front_url.includes('placehold')) {
-              var el = document.getElementById('res-emoji');
-              if (el) el.innerHTML = '<img src="'+result.result_front_url+'" style="max-height:280px;border-radius:10px;object-fit:contain"/>';
+            
+            // Display BEFORE panel with real uploaded photo using FileReader
+            var photoInput  = document.getElementById('file-in');
+            if (photoInput && photoInput.files[0]) {
+              var reader = new FileReader();
+              reader.onload = function(e) {
+                var beforeContainer = document.getElementById('before-img-container');
+                var beforeImg = document.getElementById('before-img');
+                if (beforeContainer && beforeImg) {
+                  beforeImg.src = e.target.result;
+                  beforeContainer.style.display = 'flex';
+                  var beforeSvg = document.getElementById('before-svg');
+                  if (beforeSvg) beforeSvg.style.display = 'none';
+                }
+              };
+              reader.readAsDataURL(photoInput.files[0]);
             }
+            
+            // Display AFTER panel with real AI-generated image or show error
+            if (result.result_front_url && !result.result_front_url.includes('placehold')) {
+              var afterContainer = document.getElementById('after-img-container');
+              var afterImg = document.getElementById('after-img');
+              var afterError = document.getElementById('after-error-msg');
+              if (afterContainer && afterImg) {
+                afterImg.src = result.result_front_url;
+                afterContainer.style.display = 'flex';
+                if (afterError) afterError.style.display = 'none';
+                var afterSvg = document.getElementById('after-svg');
+                if (afterSvg) afterSvg.style.display = 'none';
+              }
+            } else {
+              // Show error message if result URL is invalid
+              var afterError = document.getElementById('after-error-msg');
+              if (afterError) afterError.style.display = 'flex';
+            }
+            
             var vl = document.getElementById('res-view');
             if (vl) {
               var eng = result.engine === 'replicate' ? 'Replicate IDM-VTON ⚡' : 'HuggingFace CatVTON 🤗';

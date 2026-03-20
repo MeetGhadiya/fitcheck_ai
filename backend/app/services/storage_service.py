@@ -1,18 +1,25 @@
 """
 FitCheck AI — Storage Service
 Upload images to S3 / Cloudflare R2 with validation
+Falls back to local file storage if S3 not configured
 """
 
 import boto3
 import uuid
 import io
 import logging
+import os
+import aiofiles
+from pathlib import Path
 from fastapi import HTTPException
 from PIL import Image as PILImage
 
 from app.core.config import settings
 
 logger = logging.getLogger("fitcheck.storage")
+
+# Local storage directory for fallback when S3 is not configured
+LOCAL_STORAGE_DIR = Path(__file__).parent.parent.parent / "static" / "uploads"
 
 
 def _get_s3_client():
@@ -60,14 +67,11 @@ async def validate_image(image_bytes: bytes, content_type: str) -> None:
 async def upload_image(image_bytes: bytes, folder: str = "uploads") -> str:
     """
     Upload image to S3/R2 and return public URL.
-    Falls back to a placeholder URL if credentials not configured.
+    Falls back to local file storage if S3 credentials not configured.
     """
-    if not settings.AWS_ACCESS_KEY_ID:
-        logger.warning("No S3 credentials — using placeholder URL")
-        return f"https://placehold.co/600x800/1a2540/0ea5e9?text={folder}"
-
+    # Prepare filename
     filename = f"{folder}/{uuid.uuid4().hex}.jpg"
-
+    
     # Convert to JPEG for consistency
     try:
         img = PILImage.open(io.BytesIO(image_bytes)).convert("RGB")
@@ -79,38 +83,66 @@ async def upload_image(image_bytes: bytes, folder: str = "uploads") -> str:
         optimized_bytes = image_bytes
         filename = filename.replace(".jpg", ".png")
 
+    # Try S3 first if credentials are configured
+    if settings.AWS_ACCESS_KEY_ID:
+        try:
+            s3 = _get_s3_client()
+            s3.put_object(
+                Bucket      = settings.S3_BUCKET,
+                Key         = filename,
+                Body        = optimized_bytes,
+                ContentType = "image/jpeg",
+                ACL         = "public-read",
+            )
+
+            if settings.S3_ENDPOINT_URL:
+                # Cloudflare R2 public URL format
+                return f"{settings.S3_ENDPOINT_URL}/{settings.S3_BUCKET}/{filename}"
+            else:
+                # AWS S3
+                return f"https://{settings.S3_BUCKET}.s3.{settings.S3_REGION}.amazonaws.com/{filename}"
+
+        except Exception as e:
+            logger.error(f"S3 upload failed: {e}, falling back to local storage")
+    
+    # Fallback to local file storage
     try:
-        s3 = _get_s3_client()
-        s3.put_object(
-            Bucket      = settings.S3_BUCKET,
-            Key         = filename,
-            Body        = optimized_bytes,
-            ContentType = "image/jpeg",
-            ACL         = "public-read",
-        )
-
-        if settings.S3_ENDPOINT_URL:
-            # Cloudflare R2 public URL format
-            return f"{settings.S3_ENDPOINT_URL}/{settings.S3_BUCKET}/{filename}"
-        else:
-            # AWS S3
-            return f"https://{settings.S3_BUCKET}.s3.{settings.S3_REGION}.amazonaws.com/{filename}"
-
+        LOCAL_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+        local_path = LOCAL_STORAGE_DIR / filename
+        local_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        async with aiofiles.open(local_path, 'wb') as f:
+            await f.write(optimized_bytes)
+        
+        logger.info(f"Image stored locally at {local_path}")
+        return f"/static/uploads/{filename}"
+    
     except Exception as e:
-        logger.error(f"S3 upload failed: {e}")
+        logger.error(f"Local storage failed: {e}")
         raise HTTPException(500, "Image upload failed. Please try again.")
 
 
 async def delete_image(url: str) -> bool:
-    """Delete an image from S3 by URL."""
-    if not settings.AWS_ACCESS_KEY_ID:
-        return True
-    try:
-        # Extract key from URL
-        key = url.split(f"{settings.S3_BUCKET}/")[-1]
-        s3 = _get_s3_client()
-        s3.delete_object(Bucket=settings.S3_BUCKET, Key=key)
-        return True
-    except Exception as e:
-        logger.error(f"S3 delete failed: {e}")
-        return False
+    """Delete an image from S3 or local storage by URL."""
+    if url.startswith("/static/"):
+        # Local storage file
+        try:
+            local_path = Path(__file__).parent.parent.parent / url[1:]  # Remove leading /
+            if local_path.exists():
+                local_path.unlink()
+            return True
+        except Exception as e:
+            logger.error(f"Local file delete failed: {e}")
+            return False
+    elif settings.AWS_ACCESS_KEY_ID:
+        # S3/R2 storage
+        try:
+            # Extract key from URL
+            key = url.split(f"{settings.S3_BUCKET}/")[-1]
+            s3 = _get_s3_client()
+            s3.delete_object(Bucket=settings.S3_BUCKET, Key=key)
+            return True
+        except Exception as e:
+            logger.error(f"S3 delete failed: {e}")
+            return False
+    return True

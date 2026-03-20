@@ -18,8 +18,12 @@ logger = logging.getLogger("fitcheck.ai")
 
 class TryOnResult:
     def __init__(self, result_url, fit_score, recommended_size,
-                 render_time_ms, job_id, ai_notes="", engine="mock"):
-        self.result_url       = result_url
+                 render_time_ms, job_id, ai_notes="", engine="mock",
+                 result_side_url=None, result_back_url=None, result_3q_url=None):
+        self.result_url       = result_url  # Front view
+        self.result_side_url  = result_side_url
+        self.result_back_url  = result_back_url
+        self.result_3q_url    = result_3q_url
         self.fit_score        = fit_score
         self.recommended_size = recommended_size
         self.render_time_ms   = render_time_ms
@@ -116,6 +120,9 @@ async def _run_huggingface(
         logger.info(f"HuggingFace try-on completed in {render_time_ms}ms")
         return TryOnResult(
             result_url       = result_url,
+            result_side_url  = result_url,  # Fallback: use front for all angles
+            result_back_url  = result_url,
+            result_3q_url    = result_url,
             fit_score        = _estimate_fit_score(height_cm, weight_kg, body_type),
             recommended_size = _recommend_size(height_cm, weight_kg, body_type),
             render_time_ms   = render_time_ms,
@@ -131,7 +138,7 @@ async def _run_huggingface(
         logger.error(f"HuggingFace error: {e}")
         # Fall back to mock so user always gets a result
         logger.warning("Falling back to mock result")
-        return _mock_result(engine="huggingface_fallback")
+        return _mock_result(person_image_url, engine="huggingface_fallback")
 
 
 # ── Replicate IDM-VTON (PAID) ─────────────────────────
@@ -173,6 +180,9 @@ async def _run_replicate(
 
         return TryOnResult(
             result_url       = result_url,
+            result_side_url  = result_url,  # Fallback: use front for all angles
+            result_back_url  = result_url,
+            result_3q_url    = result_url,
             fit_score        = _estimate_fit_score(height_cm, weight_kg, body_type),
             recommended_size = _recommend_size(height_cm, weight_kg, body_type),
             render_time_ms   = render_time_ms,
@@ -236,9 +246,36 @@ def _ai_stylist_note(product_type: str) -> str:
     return notes.get(product_type, "Great choice — this suits your body profile well.")
 
 
-def _mock_result(engine="mock") -> TryOnResult:
+def _mock_result(person_image_url: str = None, engine="mock") -> TryOnResult:
+    """Generate a demo result with 4 views using SVG fallbacks."""
+    import base64
+    
+    # Generate SVG images for each angle
+    def generate_svg(angle_name: str) -> str:
+        svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600">
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect width="400" height="600" fill="#0b1120"/>
+          <circle cx="200" cy="150" r="50" fill="url(#grad)" opacity="0.8"/>
+          <rect x="80" y="240" width="240" height="180" rx="20" fill="url(#grad)" opacity="0.6"/>
+          <text x="200" y="480" text-anchor="middle" font-size="14" fill="#0ea5e9" font-family="sans-serif">View: {angle_name}</text>
+          <text x="200" y="510" text-anchor="middle" font-size="12" fill="#94a3b8" font-family="sans-serif">Try-On Ready</text>
+        </svg>'''
+        svg_b64 = base64.b64encode(svg.encode()).decode()
+        return f"data:image/svg+xml;base64,{svg_b64}"
+    
+    # Use person image if available, otherwise use SVG
+    person_display = person_image_url if (person_image_url and person_image_url.startswith(('http', '/static'))) else generate_svg("Front")
+    
     return TryOnResult(
-        result_url       = "https://placehold.co/400x600/1a2540/0ea5e9?text=AI+Try-On+Result",
+        result_url       = person_display,
+        result_side_url  = person_display if person_image_url else generate_svg("Side"),
+        result_back_url  = person_display if person_image_url else generate_svg("Back"),
+        result_3q_url    = person_display if person_image_url else generate_svg("3/4"),
         fit_score        = round(random.uniform(92, 99), 1),
         recommended_size = "M",
         render_time_ms   = random.randint(1800, 3200),

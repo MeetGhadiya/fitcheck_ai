@@ -1,8 +1,10 @@
 """FitCheck AI — FastAPI Backend"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import logging
+from pathlib import Path
 
 from app.core.config import settings
 from app.core.database import init_db
@@ -60,6 +62,11 @@ app.include_router(users.router,    prefix="/api/v1/users",    tags=["Users"])
 app.include_router(products.router, prefix="/api/v1/products", tags=["Products"])
 app.include_router(admin.router,    prefix="/api/v1/admin",    tags=["Admin"])
 app.include_router(credits.router,  prefix="/api/v1/credits",  tags=["Credits"])
+
+# Mount static files directory for uploaded images
+static_dir = Path(__file__).parent.parent / "static"
+static_dir.mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 @app.get("/health")
 async def health():

@@ -1500,7 +1500,8 @@ function runGenerate(){
             }
             
             // Display AFTER panel with real AI-generated image or show error
-            if (result.result_front_url && !result.result_front_url.includes('placehold')) {
+            if (result.result_front_url) {
+              window.currentResult = result; // Store for tab switching
               var afterContainer = document.getElementById('after-img-container');
               var afterImg = document.getElementById('after-img');
               var afterError = document.getElementById('after-error-msg');
@@ -1510,9 +1511,15 @@ function runGenerate(){
                 if (afterError) afterError.style.display = 'none';
                 var afterSvg = document.getElementById('after-svg');
                 if (afterSvg) afterSvg.style.display = 'none';
+                
+                // Add image error handler as fallback
+                afterImg.onerror = function() {
+                  console.warn('Image failed to load:', result.result_front_url);
+                  this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect fill="%231a2540" width="400" height="600"/><text fill="%230ea5e9" x="50%" y="50%" text-anchor="middle" font-size="18" font-family="sans-serif">Result Processing...</text></svg>';
+                };
               }
             } else {
-              // Show error message if result URL is invalid
+              // Show error message if result URL is missing
               var afterError = document.getElementById('after-error-msg');
               if (afterError) afterError.style.display = 'flex';
             }
@@ -1631,11 +1638,26 @@ function handleUpload(inp){
    TABS & CHIPS
 ════════════════════════════════════════════ */
 var viewLabels={front:'Front View',side:'Side View','three-quarter':'3/4 View',back:'Back View'};
-function setTab(btn,view){
+var currentResult = null; // Store the full result object
+
+function setTab(btn, view){
   document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('act');});
   btn.classList.add('act');
   var lbl=document.getElementById('res-view');
   if(lbl) lbl.textContent=viewLabels[view]||'Front View';
+  
+  // Switch image based on view
+  if(currentResult){
+    var afterImg = document.getElementById('after-img');
+    if(afterImg){
+      var imageUrl = null;
+      if(view === 'front') imageUrl = currentResult.result_front_url;
+      else if(view === 'side') imageUrl = currentResult.result_side_url || currentResult.result_front_url;
+      else if(view === 'three-quarter') imageUrl = currentResult.result_3q_url || currentResult.result_front_url;
+      else if(view === 'back') imageUrl = currentResult.result_back_url || currentResult.result_front_url;
+      if(imageUrl) afterImg.src = imageUrl;
+    }
+  }
 }
 var chips=[
   {icon:'🧥',name:'Premium Dark Blazer'},

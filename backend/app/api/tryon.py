@@ -33,6 +33,9 @@ class TryOnResponse(BaseModel):
     status:           str
     engine:           Optional[str]   # "huggingface" | "replicate" | "mock"
     result_front_url: Optional[str]
+    result_side_url:  Optional[str]
+    result_back_url:  Optional[str]
+    result_3q_url:    Optional[str]
     product_name:     Optional[str]   # Product name for display
     product_type:     Optional[str]   # Product category
     person_details:   Optional[dict]  # {height_cm, weight_kg, body_type, age}
@@ -144,8 +147,8 @@ async def create_tryon(
             "body_type": body_type or (current_user.body_type if current_user else None),
             "age": age or (current_user.age if current_user else None),
         },
-        result_front_url=None, fit_score=None,
-        recommended_size=None, ai_notes=None, render_time_ms=None,
+        result_front_url=None, result_side_url=None, result_back_url=None, result_3q_url=None,
+        fit_score=None, recommended_size=None, ai_notes=None, render_time_ms=None,
         credits_used=1 if using_credits else 0,
         created_at=str(datetime.now()),
     )
@@ -175,6 +178,9 @@ async def get_tryon(
             "age": tryon.age,
         },
         result_front_url=tryon.result_front_url,
+        result_side_url=tryon.result_side_url,
+        result_back_url=tryon.result_back_url,
+        result_3q_url=tryon.result_3q_url,
         fit_score=tryon.fit_score,
         recommended_size=tryon.recommended_size,
         ai_notes=tryon.ai_notes,
@@ -267,6 +273,9 @@ async def _process_tryon(
             if tryon:
                 tryon.status           = TryOnStatus.COMPLETED
                 tryon.result_front_url = result.result_url
+                tryon.result_side_url  = result.result_side_url or result.result_url
+                tryon.result_back_url  = result.result_back_url or result.result_url
+                tryon.result_3q_url    = result.result_3q_url or result.result_url
                 tryon.fit_score        = result.fit_score
                 tryon.recommended_size = result.recommended_size
                 tryon.render_time_ms   = result.render_time_ms
